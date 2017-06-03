@@ -13,9 +13,18 @@ q <- 3
 pi <- 0.5
 
 # Treatment effect function
-treat.effect <- function(x.base)
+treat.effect <- function(x.base,treat,i,j)
 {
-  ifelse(x.base[,2]<0.25 & x.base[,5]<0.25,sqrt(x.base[,2]^2+x.base[,5]^2),0)
+  # Create treatment effective population
+  treat1.pop <- x.base[,i]+x.base[,j]>0
+  treat0.pop <- rep(TRUE,nrow(x.base))
+  
+  # Create treatment effective magnitude
+  no.treat.effect <- 0
+  treat1.effect <- ifelse(treat1.pop,6,no.treat.effect)
+  treat0.effect <- ifelse(treat0.pop,3,no.treat.effect)
+  
+  return(ifelse(treat,treat1.effect,treat0.effect))
 }
 
 # Beta matrix
@@ -45,17 +54,18 @@ Treat.train <- sample(
 x.sig <- 0.8^(abs(outer(1:p,1:p,"-")))
 
 # Simulate x.b
-X.train.base <- mvrnorm(n.train,rep(0,p),x.sig)
+#X.train.base <- mvrnorm(n.train,rep(0,p),x.sig)
+X.train.base <- mvrnorm(n.train,rep(0,p),diag(p))
 
 
 X.train.end <- X.train.base
-X.train.end[,5] <- X.train.end[,5] + Treat.train*treat.effect(X.train.base)
-X.train.end[,6] <- X.train.end[,6] + Treat.train*treat.effect(X.train.base)
-X.train.end[,7]<- X.train.end[,7] + Treat.train*treat.effect(X.train.base)
-X.train.end <- X.train.end + mvrnorm(n.train, rep(0,p), 0.1*diag(p))   
+X.train.end[,5] <- X.train.end[,5] + treat.effect(X.train.base,Treat.train,1,3)
+X.train.end[,6] <- X.train.end[,6] + treat.effect(X.train.base,Treat.train,1,3)
+X.train.end[,7]<- X.train.end[,7] + treat.effect(X.train.base,Treat.train,1,3)
+X.train.end <- X.train.end + mvrnorm(n.train, rep(0,p), 0.01*diag(p))   
 
-Y.train.base <- (X.train.base)%*%Z + mvrnorm(n.train, rep(0,q), 0.1*diag(q))
-Y.train.end <- (X.train.end)%*%Z + mvrnorm(n.train, rep(0,q), 0.1*diag(q))
+Y.train.base <- (X.train.base)%*%Z + mvrnorm(n.train, rep(0,q), 0.01*diag(q))
+Y.train.end <- (X.train.end)%*%Z + mvrnorm(n.train, rep(0,q), 0.01*diag(q))
 
 
 ####################################
@@ -63,21 +73,22 @@ Y.train.end <- (X.train.end)%*%Z + mvrnorm(n.train, rep(0,q), 0.1*diag(q))
 #
 ####################################
 
-X.test.base  <- mvrnorm(n.test,rep(0,p),x.sig)
+#X.test.base  <- mvrnorm(n.test,rep(0,p),x.sig)
+X.test.base  <- mvrnorm(n.test,rep(0,p),diag(p))
 # With/Without treatment X.end
 X.test.case.end <-  X.test.base
 X.test.control.end <- X.test.base
-X.test.case.end[,5] <- X.test.case.end[,5] + rep(1,n.test)*treat.effect(X.test.base)
-X.test.case.end[,6] <- X.test.case.end[,6] + rep(1,n.test)*treat.effect(X.test.base)
-X.test.case.end[,7] <- X.test.case.end[,7] + rep(1,n.test)*treat.effect(X.test.base)
-X.test.control.end[,5] <- X.test.control.end[,5] + rep(0,n.test)*treat.effect(X.test.base)
-X.test.control.end[,6] <- X.test.control.end[,6] + rep(0,n.test)*treat.effect(X.test.base)
-X.test.control.end[,7] <- X.test.control.end[,7] + rep(0,n.test)*treat.effect(X.test.base)
-X.test.case.end <- X.test.case.end + mvrnorm(n.test,rep(0,p),0.1*diag(p)) 
-X.test.control.end <- X.test.control.end + mvrnorm(n.test,rep(0,p),0.1*diag(p))
-# With/Without treatment Y.end
-Y.test.case.end <- (X.test.case.end)%*%Z+mvrnorm(n.test,rep(0,q),0.1*diag(q))
-Y.test.control.end <- (X.test.control.end)%*%Z+mvrnorm(n.test,rep(0,q),0.1*diag(q))
+X.test.case.end[,5] <- X.test.case.end[,5] + treat.effect(X.test.base,rep(1,n.test),1,3)
+X.test.case.end[,6] <- X.test.case.end[,6] + treat.effect(X.test.base,rep(1,n.test),1,3)
+X.test.case.end[,7] <- X.test.case.end[,7] + treat.effect(X.test.base,rep(1,n.test),1,3)
+X.test.control.end[,5] <- X.test.control.end[,5] + treat.effect(X.test.base,rep(0,n.test),1,3)
+X.test.control.end[,6] <- X.test.control.end[,6] + treat.effect(X.test.base,rep(0,n.test),1,3)
+X.test.control.end[,7] <- X.test.control.end[,7] + treat.effect(X.test.base,rep(0,n.test),1,3)
+X.test.case.end <- X.test.case.end
+X.test.control.end <- X.test.control.end
+# With/Without treatment Y.base
+Y.test.case.end <- (X.test.case.end)%*%Z
+Y.test.control.end <- (X.test.control.end)%*%Z
 
 # Generating Rdata file for GUIDE
 # train.lab variable in this file is for the prediction purpose for Loh's method
