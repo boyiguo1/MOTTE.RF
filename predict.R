@@ -39,9 +39,10 @@ recommendResult.single <- function(tree.list, x.b){
   treat <- NULL
   for(i in 1:length(result.list)){
     out <- rbind(out,result.list[[i]]$OUTCOME)
-    treat <- c(treat,result.list[[i]]$TREAT)
+    treat <- c(treat,as.character(result.list[[i]]$TREAT))
   }
   
+  treat <- as.factor(treat)
   trt.lvl <- levels(treat)
   
   treat1.means <- colMeans(out[treat==trt.lvl[1],,drop=F])
@@ -88,9 +89,8 @@ traverseTree <- function(root, x.b){
   split.comb <- root$split.comb
   split.value <- root$split.value
   
-  if(root$isLeaf){
-    tmp <- 1
-    return(list(OUTCOME=root$Outcome, TREATMENT=root$Treatment))}
+  if(root$isLeaf)
+    return(list(OUTCOME=root$Outcome, TREATMENT=root$Treatment))
   else{
     # Test cases
     if(length(root$children) > 2)
