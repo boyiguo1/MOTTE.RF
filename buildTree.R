@@ -9,9 +9,14 @@ source("global.R")
 # impurity has two option: "MeanTreatmentEffect", "varReduce"
 buildTree <- function(x.b, x.e, treat, y.b, y.e,
                         nodesize, nsplits, left.out) {
+
+  trt.lvl <- levels(treat)
+  if(length(trt.lvl) != 2)
+    stop("Error Message: trt.lvl !=2 in buildTree")
+  
   # Dimension
   n <- nrow(x.b)
-  n.treat.1 <- sum(treat==1)
+  n.treat.1 <- sum(treat==trt.lvl[1])
   p <- ncol(x.b)
   q <- ncol(y.b)
   
@@ -58,40 +63,40 @@ buildTree <- function(x.b, x.e, treat, y.b, y.e,
   # Create the augmented matrices
   Left.matrix <- 
     rbind(
-      cbind(x.b[treat==0,,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=2*p+2*q)),
-      cbind(x.b[treat==1,,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=2*p+2*q)),
-      cbind(x.b[treat==0,,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=2*p+2*q)),
-      cbind(x.b[treat==1,,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=2*p+2*q)),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=p),diff.x[treat==0,,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=p+2*q)),
-      cbind(matrix(0,nrow=n.treat.1,ncol=2*p),diff.x[treat==1,,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=2*q)),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=3*p),diff.y[treat==0,,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=q)),
-      cbind(matrix(0,nrow=n.treat.1,ncol=3*p+q),diff.y[treat==1,,drop=FALSE]),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=p),diff.x[treat==0,,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=p+2*q)),
-      cbind(matrix(0,nrow=n.treat.1,ncol=2*p),diff.x[treat==1,,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=2*q)),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=3*p),diff.y[treat==0,,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=q)),
-      cbind(matrix(0,nrow=n.treat.1,ncol=3*p+q),diff.y[treat==1,,drop=FALSE])
+      cbind(x.b[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=2*p+2*q)),
+      cbind(x.b[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=2*p+2*q)),
+      cbind(x.b[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=2*p+2*q)),
+      cbind(x.b[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=2*p+2*q)),
+      cbind(matrix(0,nrow=n-n.treat.1,ncol=p),diff.x[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=p+2*q)),
+      cbind(matrix(0,nrow=n.treat.1,ncol=2*p),diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=2*q)),
+      cbind(matrix(0,nrow=n-n.treat.1,ncol=3*p),diff.y[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=q)),
+      cbind(matrix(0,nrow=n.treat.1,ncol=3*p+q),diff.y[treat==trt.lvl[2],,drop=FALSE]),
+      cbind(matrix(0,nrow=n-n.treat.1,ncol=p),diff.x[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=p+2*q)),
+      cbind(matrix(0,nrow=n.treat.1,ncol=2*p),diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=2*q)),
+      cbind(matrix(0,nrow=n-n.treat.1,ncol=3*p),diff.y[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=q)),
+      cbind(matrix(0,nrow=n.treat.1,ncol=3*p+q),diff.y[treat==trt.lvl[2],,drop=FALSE])
     )
   
   Right.matrix <-
     rbind(
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=3*p),diff.y[treat==0,,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=q)),
-      cbind(matrix(0,nrow=n.treat.1,ncol=3*p+q),diff.y[treat==1,,drop=FALSE]),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=p),diff.x[treat==0,,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=p+2*q)),
-      cbind(matrix(0,nrow=n.treat.1,ncol=2*p),diff.x[treat==1,,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=2*q)),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=3*p),diff.y[treat==0,,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=q)),
-      cbind(matrix(0,nrow=n.treat.1,ncol=3*p+q),diff.y[treat==1,,drop=FALSE]),
-      cbind(x.b[treat==0,,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=2*p+2*q)),
-      cbind(x.b[treat==1,,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=2*p+2*q)),
-      cbind(x.b[treat==0,,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=2*p+2*q)),
-      cbind(x.b[treat==1,,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=2*p+2*q)),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=p),diff.x[treat==0,,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=p+2*q)),
-      cbind(matrix(0,nrow=n.treat.1,ncol=2*p),diff.x[treat==1,,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=2*q))
+      cbind(matrix(0,nrow=n-n.treat.1,ncol=3*p),diff.y[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=q)),
+      cbind(matrix(0,nrow=n.treat.1,ncol=3*p+q),diff.y[treat==trt.lvl[2],,drop=FALSE]),
+      cbind(matrix(0,nrow=n-n.treat.1,ncol=p),diff.x[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=p+2*q)),
+      cbind(matrix(0,nrow=n.treat.1,ncol=2*p),diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=2*q)),
+      cbind(matrix(0,nrow=n-n.treat.1,ncol=3*p),diff.y[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=q)),
+      cbind(matrix(0,nrow=n.treat.1,ncol=3*p+q),diff.y[treat==trt.lvl[2],,drop=FALSE]),
+      cbind(x.b[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=2*p+2*q)),
+      cbind(x.b[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=2*p+2*q)),
+      cbind(x.b[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=2*p+2*q)),
+      cbind(x.b[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=2*p+2*q)),
+      cbind(matrix(0,nrow=n-n.treat.1,ncol=p),diff.x[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=p+2*q)),
+      cbind(matrix(0,nrow=n.treat.1,ncol=2*p),diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=2*q))
     )
 
   # Record the centers  
   x.center <- attr(scale(x.b, center = T, scale = FALSE),"scaled:center")
-  diff.y.0.center <- attr(scale(diff.y[treat==0,,drop=FALSE],center = T, scale = FALSE),"scaled:center")
-  diff.y.1.center <- attr(scale(diff.y[treat==1,,drop=FALSE],center = T, scale = FALSE),"scaled:center")
+  diff.y.0.center <- attr(scale(diff.y[treat==trt.lvl[1],,drop=FALSE],center = T, scale = FALSE),"scaled:center")
+  diff.y.1.center <- attr(scale(diff.y[treat==trt.lvl[2],,drop=FALSE],center = T, scale = FALSE),"scaled:center")
   
   # Conduct CCA
   cancor.res <- cc(scale(Left.matrix,center =T, scale=F),
@@ -112,8 +117,8 @@ buildTree <- function(x.b, x.e, treat, y.b, y.e,
   # Generate a vector consists of split value candidates  
   #split.value.cand <- unique(x.proj)
 
-  split.value.cand.treat1 <- unique(x.proj[treat==1])
-  split.value.cand.treat2 <- unique(x.proj[treat!=1])
+  split.value.cand.treat1 <- unique(x.proj[treat==trt.lvl[1]])
+  split.value.cand.treat2 <- unique(x.proj[treat==trt.lvl[2]])
 
   treat1.boundry <- quantile(split.value.cand.treat1, c(left.out, 1-left.out)) 
   treat2.boundry <- quantile(split.value.cand.treat2, c(left.out, 1-left.out))
