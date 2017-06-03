@@ -48,7 +48,7 @@ recommendResult.single <- function(tree.list, x.b){
   treat2.means <- colMeans(out[treat==trt.lvl[2],,drop=F])
   #if(sum(is.na(untreat.means))>0) untreat.means <- rep(0,ncol(out))
   #if(sum(is.na(treat.means))>0) treat.means <- rep(0,ncol(out)) 
-  return(list(Treat.1=treat1.means,Treat.2=treat2.means, Levels= levles(treat)))
+  return(list(Treat.1=treat1.means,Treat.2=treat2.means, Levels= levels(treat)))
 }
 
 
