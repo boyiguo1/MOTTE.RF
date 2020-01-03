@@ -1,7 +1,7 @@
 # source("global.R")
 
-library(CCA)              # R Library supporting CCA
-library(data.tree)        # R Library supporting the tree results
+# library(CCA)              # R Library supporting CCA
+# library(data.tree)        # R Library supporting the tree results
 
 # Try everything method
 # CCA diff.x and diff.y. One variable as split rule
