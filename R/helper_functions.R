@@ -1,15 +1,17 @@
-library(CCA)              # R Library supporting CCA
-library(data.tree)        # R Library supporting the tree results
+# TODO: 1) figuring out what does this calculation do.
+#       2) Change the description. Description is outragously wrong now.
+
 
 # Calculation of population variance
-#' Population mean calculation
-#' 
-#' @param x 
+#' Population variance calculation
 #'
-#' @return
+#' @param x a numeric vaector
+#'
+#' @return a numeric value
+#'
 #' @export
-#'
 #' @examples
+#' pop.var(c(1,2,3))
 pop.var <- function(x){
   res <- outer(x,x,FUN="-")
   res <- sum(res^2)/2/(length(x)^2)
@@ -19,16 +21,18 @@ pop.var <- function(x){
 #' Checking if elements of x belongs to a exclusive interval from min to max
 #'
 #' @param x The elemnt want to check. Must be an integer
-#' @param min
-#' @param max 
+#' @param min the lower bound
+#' @param max the upper bound
 #'
 #' @return True or False
-#' @export
 #'
+#' @export
 #' @examples
+#' a <- 5
+#' is.between(a, 1, 6)
 is.between <- function(x,min,max) {
   if(min > max)
     stop("Invalid parameters: Minimum is larger than Maximum")
-  
+
   return((x-min)*(max-x)>0)
 }
