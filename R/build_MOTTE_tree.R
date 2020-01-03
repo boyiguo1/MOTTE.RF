@@ -19,13 +19,14 @@
 #' @param treat A vector of binary value, the arm of treatment
 #' @param y.b Pre-treatment response, i.e. biomarkers
 #' @param y.e Post-treatment response, i.e. biomarkers
-#' @param nodesize TODO: add description
+# TODO: change the language, it is awkward.
+#' @param nodesize An integer value. The threshold that control the maximum size of a node
 #' @param nsplits A numeric value, the number of maximum splits
 #' @param left.out left.out is ensure at least left.out*2 sample for either treated or untreated sample in the group
 # left.out is used for how many treated or untreated are left out when selecting split value
 # e.g. if left.out= 1 choosing max(min(treated x),min( untreated x))
 #'
-#' @return A data.tree object
+#' @return A data.tree object, node
 #' @export
 #'
 #' @examples
@@ -35,7 +36,7 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
 
   trt.lvl <- levels(treat)
   if(length(trt.lvl) != 2)
-    stop("Error Message: trt.lvl !=2 in buildTree")
+    stop("Error Message: trt.lvl !=2 in build_MOTTE_tree")
 
   # Dimension
   n <- nrow(x.b)
@@ -49,7 +50,7 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   # Comment: extremely unlikely to happen
   if(length(unique(treat))==1){
     return(
-      Node$new(
+      data.tree::Node$new(
         paste("Terminal Node: ", n ," members", "Unique"),
         xcenter = NULL, split.comb=NULL, split.value=NULL,
         Outcome=y.e, Treatment=treat)
@@ -60,7 +61,7 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   # The number of observations is smaller than threshold
   if(n <= nodesize){
     return(
-      Node$new(paste("Terminal Node: ", n," members"),
+      data.tree::Node$new(paste("Terminal Node: ", n," members"),
                xcenter = NULL, split.comb=NULL, split.value=NULL,
                Outcome=y.e, Treatment=treat)
     )}
@@ -72,7 +73,7 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
 
   if(min(n-n.treat.1,n.treat.1) <= max(p,q)){
     return(
-      Node$new(paste("Terminal Node: ", n ," members"),
+      data.tree::Node$new(paste("Terminal Node: ", n ," members"),
                xcenter = NULL, split.comb=NULL, split.value=NULL,
                Outcome=y.e, Treatment=treat)
     )}
@@ -122,7 +123,7 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   diff.y.1.center <- attr(scale(diff.y[treat==trt.lvl[2],,drop=FALSE],center = T, scale = FALSE),"scaled:center")
 
   # Conduct CCA
-  cancor.res <- cc(scale(Left.matrix,center =T, scale=F),
+  cancor.res <- CCA::cc(scale(Left.matrix,center =T, scale=F),
                    scale(Right.matrix,center = T, scale=F))
 
   # Use the CCA scores
@@ -153,7 +154,7 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
 
   if(length(split.value.cand)==0) {
     return(
-      Node$new(paste("Terminal Node: ", n," members. No split"),
+      data.tree::Node$new(paste("Terminal Node: ", n," members. No split"),
                xcenter = NULL, split.comb=NULL, split.value=NULL,
                Outcome=y.e, Treatment=treat)
     )
@@ -192,7 +193,7 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   split.value <- impurity.score[1,which.max(impurity.score[2,])]
 
   # Create a new node
-  node <- Node$new(
+  node <-data.tree::Node$new(
     paste("split.value = ", round(split.value, digits=3)),                        # Node name: must be unique to siblings
     xcenter = x.center,
     split.comb=x.loading, split.value=split.value,
@@ -205,7 +206,7 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   if(length(greater.indices)<=0) stop("greater indices <=0")
   if(length(less.indices)<=0) stop("less indices < 0")
 
-  child.ge <- buildTree(
+  child.ge <- build_MOTTE_tree(
     x.b = x.b[greater.indices,,drop=FALSE], x.e = x.e[greater.indices,,drop=FALSE],
     treat = treat[greater.indices],
     y.b = y.b[greater.indices,,drop=FALSE], y.e = y.e[greater.indices,,drop=FALSE],
@@ -213,7 +214,7 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   )
 
   #
-  child.l <- buildTree(
+  child.l <- build_MOTTE_tree(
     x.b = x.b[less.indices,,drop=FALSE], x.e = x.e[less.indices,,drop=FALSE],
     treat = treat[less.indices],
     y.b = y.b[less.indices,,drop=FALSE], y.e = y.e[less.indices,,drop=FALSE],
@@ -230,6 +231,7 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   child.l$name <- paste("Smaller Child: ",child.l$name)
 
   # Insert Children in the tree
+  # TODO::add data.tree:: to somewhere
   node$AddChildNode(child.ge)
   node$AddChildNode(child.l)
   return(node)
