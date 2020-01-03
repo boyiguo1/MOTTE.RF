@@ -29,6 +29,7 @@
 #' @return A data.tree object, node
 #' @export
 #'
+# TODO: add import function here
 #' @examples
 #' # TODO: Add an example
 build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
