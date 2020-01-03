@@ -1,4 +1,4 @@
-source("global.R")
+# source("global.R")
 
 library(CCA)              # R Library supporting CCA
 library(data.tree)        # R Library supporting the tree results
