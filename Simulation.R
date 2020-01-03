@@ -18,12 +18,12 @@ treat.effect <- function(x.base,treat,i,j)
   # Create treatment effective population
   treat1.pop <- x.base[,i]+x.base[,j]>0
   treat0.pop <- rep(TRUE,nrow(x.base))
-  
+
   # Create treatment effective magnitude
   no.treat.effect <- 0
   treat1.effect <- ifelse(treat1.pop,6,no.treat.effect)
   treat0.effect <- ifelse(treat0.pop,3,no.treat.effect)
-  
+
   return(ifelse(treat,treat1.effect,treat0.effect))
 }
 
@@ -55,14 +55,14 @@ x.sig <- 0.8^(abs(outer(1:p,1:p,"-")))
 
 # Simulate x.b
 #X.train.base <- mvrnorm(n.train,rep(0,p),x.sig)
-X.train.base <- mvrnorm(n.train,rep(0,p),diag(p))
+X.train.base <- MASS::mvrnorm(n.train,rep(0,p),diag(p))
 
 
 X.train.end <- X.train.base
 X.train.end[,5] <- X.train.end[,5] + treat.effect(X.train.base,Treat.train,1,3)
 X.train.end[,6] <- X.train.end[,6] + treat.effect(X.train.base,Treat.train,1,3)
 X.train.end[,7]<- X.train.end[,7] + treat.effect(X.train.base,Treat.train,1,3)
-X.train.end <- X.train.end + mvrnorm(n.train, rep(0,p), 0.01*diag(p))   
+X.train.end <- X.train.end + mvrnorm(n.train, rep(0,p), 0.01*diag(p))
 
 Y.train.base <- (X.train.base)%*%Z + mvrnorm(n.train, rep(0,q), 0.01*diag(q))
 Y.train.end <- (X.train.end)%*%Z + mvrnorm(n.train, rep(0,q), 0.01*diag(q))

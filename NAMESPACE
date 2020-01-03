@@ -3,3 +3,7 @@
 export(build_MOTTE_tree)
 export(is.between)
 export(pop.var)
+export(sim_MOTTE_data)
+importFrom(MASS,mvrnorm)
+importFrom(stats,quantile)
+importFrom(stats,var)

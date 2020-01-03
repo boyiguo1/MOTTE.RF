@@ -29,6 +29,8 @@
 #' @return A data.tree object, node
 #' @export
 #'
+#' @importFrom stats quantile var
+#'
 # TODO: add import function here
 #' @examples
 #' # TODO: Add an example
@@ -145,8 +147,8 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   split.value.cand.treat1 <- unique(x.proj[treat==trt.lvl[1]])
   split.value.cand.treat2 <- unique(x.proj[treat==trt.lvl[2]])
 
-  treat1.boundry <- quantile(split.value.cand.treat1, c(left.out, 1-left.out))
-  treat2.boundry <- quantile(split.value.cand.treat2, c(left.out, 1-left.out))
+  treat1.boundry <- stats::quantile(split.value.cand.treat1, c(left.out, 1-left.out))
+  treat2.boundry <- stats::quantile(split.value.cand.treat2, c(left.out, 1-left.out))
 
   split.value.cand <- unique(x.proj)
   split.value.cand <- split.value.cand[is.between(unique(x.proj),

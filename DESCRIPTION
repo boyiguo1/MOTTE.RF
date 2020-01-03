@@ -14,4 +14,6 @@ LazyData: true
 RoxygenNote: 7.0.0
 Imports: 
     data.tree,
-    CCA
+    CCA,
+    MASS,
+    stats
