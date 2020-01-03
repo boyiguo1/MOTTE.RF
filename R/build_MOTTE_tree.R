@@ -10,7 +10,27 @@
 # left.out is used for how many treated or untreated are left out when selecting split value
 # e.g. if left.out= 1 choosing max(min(treated x),min( untreated x))
 # impurity has two option: "MeanTreatmentEffect", "varReduce"
-buildTree <- function(x.b, x.e, treat, y.b, y.e,
+
+
+#' Fitting MOTTE Tree in the MOTTE.RF
+#'
+#' @param x.b Pre-treatment covariates, i.e. microbiomes
+#' @param x.e Post-treatment covariates, i.e. microbiomes
+#' @param treat A vector of binary value, the arm of treatment
+#' @param y.b Pre-treatment response, i.e. biomarkers
+#' @param y.e Post-treatment response, i.e. biomarkers
+#' @param nodesize TODO: add description
+#' @param nsplits A numeric value, the number of maximum splits
+#' @param left.out left.out is ensure at least left.out*2 sample for either treated or untreated sample in the group
+# left.out is used for how many treated or untreated are left out when selecting split value
+# e.g. if left.out= 1 choosing max(min(treated x),min( untreated x))
+#'
+#' @return A data.tree object
+#' @export
+#'
+#' @examples
+#' # TODO: Add an example
+build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
                         nodesize, nsplits, left.out) {
 
   trt.lvl <- levels(treat)
