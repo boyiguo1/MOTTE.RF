@@ -17,14 +17,14 @@ build_MOTTE_tree(x.b, x.e, treat, y.b, y.e, nodesize, nsplits, left.out)
 
 \item{y.e}{Post-treatment response, i.e. biomarkers}
 
-\item{nodesize}{TODO: add description}
+\item{nodesize}{An integer value. The threshold that control the maximum size of a node}
 
 \item{nsplits}{A numeric value, the number of maximum splits}
 
 \item{left.out}{left.out is ensure at least left.out*2 sample for either treated or untreated sample in the group}
 }
 \value{
-A data.tree object
+A data.tree object, node
 }
 \description{
 Fitting MOTTE Tree in the MOTTE.RF
