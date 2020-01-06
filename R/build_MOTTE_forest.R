@@ -1,10 +1,10 @@
-library(parallel)
-library(doParallel)
-library(foreach)            # R library which supports parallel computing
-source("buildTree.R")    # Tree 
+# library(parallel)
+# library(doParallel)
+# library(foreach)            # R library which supports parallel computing
+
 
 #' buildForest
-#' 
+#'
 #' The function to fitting tree/trees
 #'
 #' @param x.b Before treatment covariates, a n by p matrix
@@ -22,7 +22,7 @@ source("buildTree.R")    # Tree
 #' @export
 #'
 #' @examples
-buildForest <- function(
+build_MOTTE_forest <- function(
   x.b, x.e,
   treat,
   y.b, y.e,
@@ -30,38 +30,38 @@ buildForest <- function(
   nsplits = NULL,
   nodesize = 2*(ncol(x.b)+1),
   left.out = 0.1,
-  ntree = ifelse(is.null(nsplits),1,200), 
+  ntree = ifelse(is.null(nsplits),1,200),
   nCore=ifelse(is.null(nsplits),1,detectCores()-1)) {
-  
+
   ### Error Prevention Code
   if(!is.matrix(x.b) || !is.matrix(x.e) || !is.matrix(y.b) || !is.matrix(y.e))
     stop("Error Message: x.b, x.e, y.b, y.e must be matrices")
-  
+
   if(!is.vector(treat))
     stop("Error Message: treat must be a vector")
-  
+
   if(length(unique(
     nrow(x.b),nrow(x.e),length(treat),nrow(y.b), nrow(y.b)
   ))!=1)
     stop("Error Message: incosistent observation numbers in x.b, x.e, treat, y.b, y.e")
-  
+
   if(!is.numeric(left.out) || !is.between(left.out,0,0.5))
     stop("Error Message: left.out must be a numeric value between 0 and 0.5")
 
   if(!is.null(nsplits) & !is.integer(nsplits))
     stop("Error Message: nsplits must be NULL or numeric")
-  
+
   nCore <- round(nCore)
   if(!is.numeric(nCore) || nCore <= 0)
     stop("Error Message: nCore must be a positive integer")
 
-  ntree <- round(ntree)  
+  ntree <- round(ntree)
   if(!is.numeric(ntree) || ntree <= 0)
     stop("Error Message: ntree must be a positive integer")
-    
+
   if(is.null(nsplits))
     cat("Exhaustively searching for split value\n")
-  
+
   treat <- factor(treat)
   if(length(levels(treat)) != 2)
     stop("Error Message: Incorrect number of treatment groups. Must be 2 groups")
@@ -80,8 +80,8 @@ buildForest <- function(
     ### Set up cluster enviroment
     cl <- makeCluster(min(nCore,detectCores()-1) , outfile="log.out")
     registerDoParallel(cl)
-    
-    ### Construct forest with 
+
+    ### Construct forest with
     forest <- foreach(i = 1:ntree,
                       .combine = c,
                       .export=c("buildTree","is.between"),

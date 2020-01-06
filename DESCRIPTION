@@ -16,4 +16,5 @@ Imports:
     data.tree,
     CCA,
     MASS,
-    stats
+    stats,
+    doParallel
