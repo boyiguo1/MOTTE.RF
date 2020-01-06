@@ -33,7 +33,17 @@
 #'
 # TODO: add import function here
 #' @examples
-#' # TODO: Add an example
+#' tmp.dat <- sim_MOTTE_data( n.train = 500, n.test = 200,
+#' p = 10, q = 3, pi = 0.5)
+#'
+#' train.dat <- tmp.dat$train
+#'
+#' with(train.dat,
+#'     build_MOTTE_tree(x.b, x.e, factor(treat), y.b, y.e,
+#'                      nodesize=30, nsplits=NULL, left.out = 0.1)
+#'  )
+#'
+
 build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
                         nodesize, nsplits, left.out) {
 
