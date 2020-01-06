@@ -17,4 +17,5 @@ Imports:
     CCA,
     MASS,
     stats,
-    doParallel
+    doParallel,
+    foreach

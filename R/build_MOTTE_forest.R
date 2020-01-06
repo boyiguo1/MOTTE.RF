@@ -17,11 +17,27 @@
 #' @param nodesize Parameter to control the node size. When the number of observations in Node smaller than nodesize, stop splitting
 #' @param nsplits The number of split condidate want to examine when constructing split rule
 #' @param nCore The number of cores use for forest contruction when doing parallel computation
+#' @param left.out left.out is ensure at least left.out*2 sample for either treated or untreated sample in the group
+# left.out is used for how many treated or untreated are left out when selecting split value
+# e.g. if left.out= 1 choosing max(min(treated x),min( untreated x))
+#'
 #'
 #' @return a list of data.tree. Even when only one tree construct, it is a list containing the single tree
 #' @export
 #'
+#' @import parallel
+#' @importFrom doParallel registerDoParallel
+#' @importFrom foreach foreach %dopar%
+#'
 #' @examples
+#' tmp.dat <- sim_MOTTE_data( n.train = 500, n.test = 200,
+#' p = 10, q = 3, pi = 0.5)
+#'
+#' train.dat <- tmp.dat$train
+#'
+#' with(train.dat,
+#'     build_MOTTE_forest(x.b, x.e, treat, y.b, y.e)
+#'  )
 build_MOTTE_forest <- function(
   x.b, x.e,
   treat,
@@ -69,7 +85,7 @@ build_MOTTE_forest <- function(
   if(nCore==1)
   {
     forest <- lapply(1:ntree,FUN = function(x){
-      return(buildTree(
+      return(build_MOTTE_tree(
         x.b=x.b, x.e=x.e, treat=treat, y.b=y.b, y.e=y.e,
         nodesize=nodesize, nsplits=nsplits, left.out = left.out
       )
@@ -84,12 +100,12 @@ build_MOTTE_forest <- function(
     ### Construct forest with
     forest <- foreach(i = 1:ntree,
                       .combine = c,
-                      .export=c("buildTree","is.between"),
+                      .export=c("build_MOTTE_tree","is.between"),
                       .multicombine = TRUE,
                       .verbose=TRUE,
                       .packages = c("CCA","data.tree"))  %dopar%
                       {
-                        tree <- buildTree(
+                        tree <- build_MOTTE_tree(
                           x.b=x.b, x.e=x.e, treat=treat, y.b=y.b, y.e=y.e,
                           nodesize=nodesize, nsplits=nsplits, left.out = left.out
                         )
