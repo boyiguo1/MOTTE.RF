@@ -38,6 +38,7 @@
 #' with(train.dat,
 #'     build_MOTTE_forest(x.b, x.e, treat, y.b, y.e)
 #'  )
+
 build_MOTTE_forest <- function(
   x.b, x.e,
   treat,
