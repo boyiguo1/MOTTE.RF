@@ -31,8 +31,30 @@ pop.var <- function(x){
 #' a <- 5
 #' is.between(a, 1, 6)
 is.between <- function(x,min,max) {
-  if(min > max)
-    stop("Invalid parameters: Minimum is larger than Maximum")
-
+  if(min > max) {
+    #return(0)
+    stop("is.between::Invalid parameters: Minimum is larger than Maximum")
+  }
   return((x-min)*(max-x)>0)
 }
+
+
+#' Title
+#'
+#' @param x
+#' @param epsilon
+#'
+#' @return
+#' @export
+#'
+#' @examples
+findMaxIndex <- function(x , epsilon){
+  x <- as.matrix(x)
+  thres <- abs(x[1,1])*epsilon
+
+  index <- max(which((abs(diag(x))>thres)==TRUE))
+
+  return(index)
+
+}
+
