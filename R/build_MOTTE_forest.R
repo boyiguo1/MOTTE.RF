@@ -52,7 +52,7 @@ build_MOTTE_forest <- function(
 
   if(!is.null(nsplits))
     nsplits <- as.integer(nsplits)
-    
+
   ### Error Prevention Code
   if(!is.matrix(x.b) || !is.matrix(x.e) || !is.matrix(y.b) || !is.matrix(y.e))
     stop("Error Message: x.b, x.e, y.b, y.e must be matrices")
@@ -98,7 +98,7 @@ build_MOTTE_forest <- function(
   }
   else{
     ### Set up cluster enviroment
-    cl <- makeCluster(min(nCore,detectCores()-1) , outfile="log.out")
+    cl <- makeCluster(min(nCore,detectCores()-1))
     registerDoParallel(cl)
 
     ### Construct forest with
