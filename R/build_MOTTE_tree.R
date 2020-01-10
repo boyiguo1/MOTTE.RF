@@ -30,6 +30,7 @@
 #' @export
 #'
 #' @importFrom stats quantile var
+#' @import data.tree
 #'
 # TODO: add import function here
 #' @examples
