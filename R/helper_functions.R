@@ -41,8 +41,8 @@ is.between <- function(x,min,max) {
 
 #' Title
 #'
-#' @param x
-#' @param epsilon
+#' @param x is the matrix
+#' @param epsilon some threshold
 #'
 #' @return
 #' @export
