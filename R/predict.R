@@ -15,7 +15,14 @@ recommendResult <- function(tree.list,x.b,w) {
 
   if(!is.matrix(x.b))
     stop("Error Message: x.b must be a matrix")
-
+  if(!is.matrix(w))
+    w.matrix <- matrix(w, ncol=length(w), nrow=nrow(x.b), byrow=TRUE)
+  else {
+    w.matrix <- w
+    if(nrow(w.matrix)!=nrow(x.b))
+      stop("Error Message: Inconsistent dimension between x.b and w")
+  }
+    
   return(
     apply(x.b,1,FUN=function(x,tree.list) {
       comp <- recommendResult.single(tree.list,x)
