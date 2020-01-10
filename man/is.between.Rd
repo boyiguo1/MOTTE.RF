@@ -14,12 +14,16 @@ is.between(x, min, max)
 \item{max}{the upper bound}
 }
 \value{
-True or False
+True or False for valid comparison result. If \code{min} > \code{max}, the function return 0.
+
+#@export
+#@examples
+#is.between(3, 1, 6)  #TRUE
+#is.between(7, 1, 6)  #FALSE
+#is.between(5, 4, 1)  #0
+
+#is.between(c(1,3,2,7), 1, 6)
 }
 \description{
 Checking if elements of x belongs to a exclusive interval from min to max
-}
-\examples{
-a <- 5
-is.between(a, 1, 6)
 }

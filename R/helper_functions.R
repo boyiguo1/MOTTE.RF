@@ -18,28 +18,31 @@ pop.var <- function(x){
   return(res)
 }
 
-#' Checking if elements of x belongs to a exclusive interval from min to max
+#' Checking if elements of a vector belongs to a exclusive interval from min to max
 #'
-#' @param x The elemnt want to check. Must be an integer
-#' @param min the lower bound
-#' @param max the upper bound
+#' @param x A numeric vector/scalar
+#' @param min the lower bound of the exclusive interval
+#' @param max the upper bound of the exclusive interval
 #'
-#' @return True or False
+#' @return True or False for valid comparison result. If \code{min} > \code{max}, the function return 0.
 #'
-#' @export
-#' @examples
-#' a <- 5
-#' is.between(a, 1, 6)
+#' #@export
+#' #@examples
+#' #is.between(3, 1, 6)  #TRUE
+#' #is.between(7, 1, 6)  #FALSE
+#' #is.between(5, 4, 1)  #0
+#'
+#' #is.between(c(1,3,2,7), 1, 6)
 is.between <- function(x,min,max) {
   if(min > max) {
-    #return(0)
-    stop("is.between::Invalid parameters: Minimum is larger than Maximum")
+    return(0)
+    #stop("is.between::Invalid parameters: Minimum is larger than Maximum")
   }
   return((x-min)*(max-x)>0)
 }
 
 
-#' Title
+#' Didn't find this function in tree ir forest yet. DOn't know if this is necessary
 #'
 #' @param x is the matrix
 #' @param epsilon some threshold

@@ -3,7 +3,6 @@
 export(build_MOTTE_forest)
 export(build_MOTTE_tree)
 export(findMaxIndex)
-export(is.between)
 export(pop.var)
 export(predictResult)
 export(recommendResult)
