@@ -50,6 +50,9 @@ build_MOTTE_forest <- function(
   ntree = ifelse(is.null(nsplits),1,200),
   nCore=ifelse(is.null(nsplits),1,detectCores()-1)) {
 
+  if(!is.null(nsplits))
+    nsplits <- as.integer(nsplits)
+    
   ### Error Prevention Code
   if(!is.matrix(x.b) || !is.matrix(x.e) || !is.matrix(y.b) || !is.matrix(y.e))
     stop("Error Message: x.b, x.e, y.b, y.e must be matrices")
