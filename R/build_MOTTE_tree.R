@@ -33,6 +33,8 @@
 #' @import data.tree
 #'
 # TODO: add import function here
+# TODO: add description to setting reference trt.lvl. as R convention, the first level from levels function are use as the refence group
+#       i.e. treatment 0/ treatment control
 #' @examples
 #' tmp.dat <- sim_MOTTE_data( n.train = 500, n.test = 200,
 #' p = 10, q = 3, pi = 0.5)
@@ -98,59 +100,66 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   diff.x <- x.e - x.b
   diff.y <- y.e - y.b
 
-  # Create the augmented matrices
-  Left.matrix <-
+  # Create the augmented matrices for both treatment arm
+  # Each of the matrix have p(X^b) + p(\Delta X) + q (\Delta Y) columns
+  # Trtment lvl 1
+
+  trt.1.left.matrix <-
     rbind(
-      cbind(x.b[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=2*p+2*q)),
-      cbind(x.b[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=2*p+2*q)),
-      cbind(x.b[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=2*p+2*q)),
-      cbind(x.b[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=2*p+2*q)),
-      cbind(matrix(0,nrow=n.treat.1,ncol=p),diff.x[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=p+2*q)),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=2*p),diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=2*q)),
-      cbind(matrix(0,nrow=n.treat.1,ncol=3*p),diff.y[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=q)),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=3*p+q),diff.y[treat==trt.lvl[2],,drop=FALSE]),
-      cbind(matrix(0,nrow=n.treat.1,ncol=p),diff.x[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=p+2*q)),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=2*p),diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=2*q)),
-      cbind(matrix(0,nrow=n.treat.1,ncol=3*p),diff.y[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=q)),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=3*p+q),diff.y[treat==trt.lvl[2],,drop=FALSE])
+      cbind(x.b[treat==trt.lvl[1],,drop=FALSE],matrix(0, nrow=n.treat.1, ncol=p+q)),
+      cbind(matrix(0,nrow=n.treat.1,ncol=2*p),diff.y[treat==trt.lvl[1],,drop=FALSE]),
+      cbind(x.b[treat==trt.lvl[1],,drop=FALSE],matrix(0, nrow=n.treat.1, ncol=p+q))
+    )
+  trt.1.right.matrix <-
+    rbind(
+      cbind(matrix(0,nrow=n.treat.1,ncol=p),diff.x[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=q)),
+      cbind(matrix(0,nrow=n.treat.1,ncol=p),diff.x[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=q)),
+      cbind(matrix(0,nrow=n.treat.1,ncol=2*p),diff.y[treat==trt.lvl[1],,drop=FALSE])
     )
 
-  Right.matrix <-
-    rbind(
-      cbind(matrix(0,nrow=n.treat.1,ncol=3*p),diff.y[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=q)),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=3*p+q),diff.y[treat==trt.lvl[2],,drop=FALSE]),
-      cbind(matrix(0,nrow=n.treat.1,ncol=p),diff.x[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=p+2*q)),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=2*p),diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=2*q)),
-      cbind(matrix(0,nrow=n.treat.1,ncol=3*p),diff.y[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=q)),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=3*p+q),diff.y[treat==trt.lvl[2],,drop=FALSE]),
-      cbind(x.b[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=2*p+2*q)),
-      cbind(x.b[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=2*p+2*q)),
-      cbind(x.b[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=2*p+2*q)),
-      cbind(x.b[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=2*p+2*q)),
-      cbind(matrix(0,nrow=n.treat.1,ncol=p),diff.x[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=p+2*q)),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=2*p),diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=2*q))
-    )
+  # Trtment lvl 2
 
-  # Record the centers
-  x.center <- attr(scale(x.b, center = T, scale = FALSE),"scaled:center")
-  diff.y.0.center <- attr(scale(diff.y[treat==trt.lvl[1],,drop=FALSE],center = T, scale = FALSE),"scaled:center")
-  diff.y.1.center <- attr(scale(diff.y[treat==trt.lvl[2],,drop=FALSE],center = T, scale = FALSE),"scaled:center")
+  trt.2.left.matrix <-
+    rbind(
+      cbind(x.b[treat==trt.lvl[2],,drop=FALSE],matrix(0, nrow=n-n.treat.1, ncol=p+q)),
+      cbind(matrix(0,nrow=n-n.treat.1,ncol=2*p),diff.y[treat==trt.lvl[2],,drop=FALSE]),
+      cbind(x.b[treat==trt.lvl[2],,drop=FALSE],matrix(0, nrow=n-n.treat.1, ncol=p+q))
+    )
+  trt.2.right.matrix <-
+    rbind(
+      cbind(matrix(0,nrow=n-n.treat.1,ncol=p),diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=q)),
+      cbind(matrix(0,nrow=n-n.treat.1,ncol=p),diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=q)),
+      cbind(matrix(0,nrow=n-n.treat.1,ncol=2*p),diff.y[treat==trt.lvl[2],,drop=FALSE])
+    )
 
   # Conduct CCA
-  cancor.res <- CCA::cc(scale(Left.matrix,center =T, scale=F),
-                   scale(Right.matrix,center = T, scale=F))
+  trt.1.cancor.res <- CCA::cc(trt.1.left.matrix, trt.1.right.matrix)
+  trt.2.cancor.res <- CCA::cc(trt.2.left.matrix, trt.2.right.matrix)
 
   # Use the CCA scores
   # In this step we use the first canonical direction
   # Each xceof column is one canonical loading
-  x.loading <- cancor.res$xcoef[1:p,1]
-  diff.y.0.loading <- cancor.res$xcoef[(3*p+1):(3*p+q),1]
-  diff.y.1.loading <- cancor.res$xcoef[(3*p+q+1):(ncol(Left.matrix)),1]
+  # TODO: write a function that extract ccs.
+  trt.1.x.loading <- trt.1.cancor.res$xcoef[1:p,1]
+  # diff.y.0.loading <- cancor.res$xcoef[(3*p+1):(3*p+q),1]
+  trt.1.y.loading <- trt.1.cancor.res$xcoef[(2*p+1):(ncol(Left.matrix)),1]
+  # TODO: check if xcoef give the same as ycoef
+
+  trt.2.x.loading <- trt.2.cancor.res$xcoef[1:p,1]
+  # diff.y.0.loading <- cancor.res$xcoef[(3*p+1):(3*p+q),1]
+  trt.2.y.loading <- trt.2.cancor.res$xcoef[(2*p+1):(ncol(Left.matrix)),1]
+  # TODO: check if xcoef give the same as ycoef
+
 
   # Calculate the canonical variates
-  x.proj <- scale(x.b,center=x.center, scale=F)%*%x.loading
-  y0.proj <- scale(diff.y, center = diff.y.0.center, scale=F)%*%diff.y.0.loading
-  y1.proj <- scale(diff.y, center = diff.y.1.center, scale= F) %*% diff.y.1.loading
+  # x.proj <- scale(x.b,center=x.center, scale=F)%*%x.loading
+  # y0.proj <- scale(diff.y, center = diff.y.0.center, scale=F)%*%diff.y.0.loading
+  # y1.proj <- scale(diff.y, center = diff.y.1.center, scale= F) %*% diff.y.1.loading
+
+
+  x.proj <- x.b %*% (trt.2.x.loading - trt.1.x.loading)
+  y.proj <- diff.y %*% (trt.2.x.loading - trt.1.x.loading)
+
 
   # Generate a vector consists of split value candidates
   #split.value.cand <- unique(x.proj)
@@ -250,3 +259,10 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   node$AddChildNode(child.l)
   return(node)
 }
+
+
+#TODO: add a recursive function, which contains standardization of the data.
+# Record the centers
+x.center <- attr(scale(x.b, center = T, scale = FALSE),"scaled:center")
+diff.y.0.center <- attr(scale(diff.y[treat==trt.lvl[1],,drop=FALSE],center = T, scale = FALSE),"scaled:center")
+diff.y.1.center <- attr(scale(diff.y[treat==trt.lvl[2],,drop=FALSE],center = T, scale = FALSE),"scaled:center")
