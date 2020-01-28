@@ -166,8 +166,8 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   # y0.proj <- scale(diff.y, center = diff.y.0.center, scale=F)%*%diff.y.0.loading
   # y1.proj <- scale(diff.y, center = diff.y.1.center, scale= F) %*% diff.y.1.loading
 
-
-  x.proj <- x.b %*% (trt.2.x.loading - trt.1.x.loading)
+  x.loading <- trt.2.x.loading - trt.1.x.loading
+  x.proj <- x.b %*% x.loading
   #y.proj <- diff.y %*% (trt.2.x.loading - trt.1.x.loading)
 
 
