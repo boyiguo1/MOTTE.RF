@@ -13,9 +13,26 @@
 #'
 #' @examples
 #' set.seed(1)
+#' #TODO: extract making B to a function
+#' B <- matrix(
+#'     c(rep(1,3), rep(0, 7),
+#'     rep(0,3), rep(1,3), rep(0, 4),
+#'     rep(0,6), rep(1,3), 0),
+#'     nrow = 10, ncol = 3) %>%
+#'     cbind(matrix(0,nrow = 10, ncol = 7))
+#'
+#' #TODO: extract making Z to a function
+#' Z <- matrix(
+#'    c(rep(1,3), rep(0, 7),
+#'     rep(0,3), rep(1,3), rep(0, 4),
+#'     rep(0,6), rep(1,3), 0),
+#'     nrow = 10, ncol = 3
+#' )
 #' sim_MOTTE_data( n.train = 500, n.test = 200,
-#' p = 10, q = 3, pi = 0.5)
+#' p = 10, q = 3, ratio = 0.5,
+#' B = B, Z = Z)
 
+# TODO: setup the magnitude for the errors
 
 sim_MOTTE_data <- function(
   n.train = 500, # <-  500
@@ -23,38 +40,30 @@ sim_MOTTE_data <- function(
   p = 10, #  <- 10
   q = 3, #  <- 3
   # pi is the ratio between treatment groups
-  ratio = 0.5#, # <- 0.5,
+  ratio = 0.5, # <- 0.5,
+  cov.mat = diag(p),
+  # TODO: incorporate the linear and polynormial for both treat.f and link.f in the code
+  treat.f = c("Linear", "Polynomial"),
+  link.f = c("Linear", "Polynomial"),
+  B ,
+  Z
   #seed = 1
 ){
   #set.seed(seed)
   # Simulate the binary treatment assignment for training data
-  Treat.train <- rbinom(n.train, 1, ratio)
-
-  # Set up for the design matrix
-  # TODO: extract this as an argument
-  # figure out how this has been in the paper
-  Z <- matrix(
-    cbind(
-      c(rep(1,5),rep(0,5)),
-      c(rep(0,2),rep(1,5),rep(0,3)),
-      c(rep(0,5),rep(1,5))
-    ),nrow=p,ncol=q)
+  Trt.lvls <- c("Trt 1", "Trt 2")
+  Trt.train <- factor(Trt.lvls[rbinom(n.train, 1, ratio)+1])
 
   # Simulate the autoregressive covariance matrix of X
+  # TODO: replace all x.sig with cov.mat
   x.sig <- 0.8^(abs(outer(1:p,1:p,"-")))
 
   # Simulate x.b
   X.train.base <- MASS::mvrnorm(n.train,rep(0,p),diag(p))
 
-  # TODO: why the treatment effect have the same i, and j
-  # TODO: Extract treat.effect as a parameter
-  X.train.end <- X.train.base
-  X.train.end[,5] <- X.train.end[,5] + treat.effect(X.train.base,Treat.train,1,3)
-  X.train.end[,6] <- X.train.end[,6] + treat.effect(X.train.base,Treat.train,1,3)
-  X.train.end[,7] <- X.train.end[,7] + treat.effect(X.train.base,Treat.train,1,3)
-  X.train.end <- X.train.end + mvrnorm(n.train, rep(0,p), 0.01*diag(p))
+  # TODO: add treatment effect in it by making treat.train in it.
+  X.train.end <- X.train.base + X.train.base %*% B + mvrnorm(n.train, rep(0,p), 0.01*diag(p))
 
-  #TODO: fix the sd here. Too small
   Y.train.base <- (X.train.base)%*%Z + mvrnorm(n.train, rep(0,q), 0.01*diag(q))
   Y.train.end <- (X.train.end)%*%Z + mvrnorm(n.train, rep(0,q), 0.01*diag(q))
 
@@ -66,16 +75,10 @@ sim_MOTTE_data <- function(
 
   X.test.base  <- MASS::mvrnorm(n.test,rep(0,p),diag(p))
   # With/Without treatment X.end
-  X.test.case.end <-  X.test.base
-  X.test.control.end <- X.test.base
-  X.test.case.end[,5] <- X.test.case.end[,5] + treat.effect(X.test.base,rep(1,n.test),1,3)
-  X.test.case.end[,6] <- X.test.case.end[,6] + treat.effect(X.test.base,rep(1,n.test),1,3)
-  X.test.case.end[,7] <- X.test.case.end[,7] + treat.effect(X.test.base,rep(1,n.test),1,3)
-  X.test.control.end[,5] <- X.test.control.end[,5] + treat.effect(X.test.base,rep(0,n.test),1,3)
-  X.test.control.end[,6] <- X.test.control.end[,6] + treat.effect(X.test.base,rep(0,n.test),1,3)
-  X.test.control.end[,7] <- X.test.control.end[,7] + treat.effect(X.test.base,rep(0,n.test),1,3)
-  X.test.case.end <- X.test.case.end
-  X.test.control.end <- X.test.control.end
+  # TODO: change the matrix calc to add treatment effect on top
+  X.test.case.end <-  X.test.base + X.test.base %*% B
+  X.test.control.end <-  X.test.base + X.test.base %*% B
+
   # With/Without treatment Y.base
   Y.test.case.end <- (X.test.case.end)%*%Z
   Y.test.control.end <- (X.test.control.end)%*%Z
@@ -94,18 +97,4 @@ sim_MOTTE_data <- function(
       )
     )
   )
-}
-
-treat.effect <- function(x.base,treat,i,j)
-{
-  # Create treatment effective population
-  treat1.pop <- x.base[,i]+x.base[,j]>0
-  treat0.pop <- rep(TRUE,nrow(x.base))
-
-  # Create treatment effective magnitude
-  no.treat.effect <- 0
-  treat1.effect <- ifelse(treat1.pop,6,no.treat.effect)
-  treat0.effect <- ifelse(treat0.pop,3,no.treat.effect)
-
-  return(ifelse(treat,treat1.effect,treat0.effect))
 }
