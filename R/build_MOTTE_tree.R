@@ -76,7 +76,8 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
     return(
       data.tree::Node$new(
         paste("Terminal Node: ", n ," members", "Unique"),
-        xcenter = NULL, split.comb=NULL, split.value=NULL,
+        #xcenter = NULL,
+        split.comb=NULL, split.value=NULL,
         Outcome=y.e, Treatment=treat)
     )}
 
@@ -86,7 +87,8 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   if(n <= nodesize){
     return(
       data.tree::Node$new(paste("Terminal Node: ", n," members"),
-               xcenter = NULL, split.comb=NULL, split.value=NULL,
+               #xcenter = NULL,
+               split.comb=NULL, split.value=NULL,
                Outcome=y.e, Treatment=treat)
     )}
 
@@ -98,7 +100,8 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   if(min(n-n.treat.1,n.treat.1) <= max(p,q)){
     return(
       data.tree::Node$new(paste("Terminal Node: ", n ," members"),
-               xcenter = NULL, split.comb=NULL, split.value=NULL,
+               #xcenter = NULL,
+               split.comb=NULL, split.value=NULL,
                Outcome=y.e, Treatment=treat)
     )}
 
@@ -142,18 +145,16 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
          )
 
   # Conduct CCA
-  trt.1.cancor.res <- CCA::cc(trt.1.left.matrix, trt.1.right.matrix)
-  trt.2.cancor.res <- CCA::cc(trt.2.left.matrix, trt.2.right.matrix)
+  trt.1.cancor.res <- CCA::cc(rbind(trt.1.left.matrix,trt.1.right.matrix),
+                              rbind(trt.1.right.matrix, trt.1.left.matrix))
+  trt.2.cancor.res <- CCA::cc(rbind(trt.2.left.matrix, trt.2.right.matrix),
+                              rbind(trt.2.right.matrix, trt.2.left.matrix))
 
   # Use the CCA scores
   # In this step we use the first canonical direction
   # Each xceof column is one canonical loading
   # TODO: write a function that extract ccs.
   trt.1.x.loading <- trt.1.cancor.res$xcoef[1:p,1]
-  # diff.y.0.loading <- cancor.res$xcoef[(3*p+1):(3*p+q),1]
-  #trt.1.y.loading <- trt.1.cancor.res$xcoef[(2*p+1):(ncol(Left.matrix)),1]
-  # TODO: check if xcoef give the same as ycoef
-
   trt.2.x.loading <- trt.2.cancor.res$xcoef[1:p,1]
   # diff.y.0.loading <- cancor.res$xcoef[(3*p+1):(3*p+q),1]
   #trt.2.y.loading <- trt.2.cancor.res$xcoef[(2*p+1):(ncol(Left.matrix)),1]
@@ -180,6 +181,7 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   treat2.boundry <- stats::quantile(split.value.cand.treat2, c(left.out, 1-left.out))
 
   split.value.cand <- unique(x.proj)
+  # Here it used the internal funciton is.between
   split.value.cand <- split.value.cand[is.between(unique(x.proj),
                                  min = max(treat1.boundry[1],treat2.boundry[1]),
                                  max = min(treat1.boundry[2],treat2.boundry[2]))]
@@ -187,7 +189,8 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   if(length(split.value.cand)==0) {
     return(
       data.tree::Node$new(paste("Terminal Node: ", n," members. No split"),
-               xcenter = NULL, split.comb=NULL, split.value=NULL,
+               #xcenter = NULL,
+               split.comb=NULL, split.value=NULL,
                Outcome=y.e, Treatment=treat)
     )
   }
@@ -230,7 +233,7 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   # Create a new node
   node <-data.tree::Node$new(
     paste("split.value = ", round(split.value, digits=3)),                        # Node name: must be unique to siblings
-    xcenter = x.center,
+    #xcenter = x.center,
     split.comb=x.loading, split.value=split.value,
     Outcome=NULL, Treatment=NULL
   )
