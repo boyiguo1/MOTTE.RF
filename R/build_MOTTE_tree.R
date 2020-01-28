@@ -25,6 +25,7 @@
 #' @param left.out left.out is ensure at least left.out*2 sample for either treated or untreated sample in the group
 # left.out is used for how many treated or untreated are left out when selecting split value
 # e.g. if left.out= 1 choosing max(min(treated x),min( untreated x))
+#' @param seed a seed number to generate the random subsets of split candidates. Doesn't work when applying nsplit==NULL
 #'
 #' @return A data.tree object, node
 #' @export
@@ -37,18 +38,25 @@
 #       i.e. treatment 0/ treatment control
 #' @examples
 #' tmp.dat <- sim_MOTTE_data( n.train = 500, n.test = 200,
-#' p = 10, q = 3, pi = 0.5)
+#' p = 10, q = 3, ratio = 0.5)
 #'
 #' train.dat <- tmp.dat$train
 #'
-#' with(train.dat,
+#' x.b <- scale(train.dat$x.b, center = F, scale = T)
+#' x.e <- scale(train.dat$x.e, center = F, scale = T)
+#' y.b <- scale(train.dat$y.b, center = F, scale = T)
+#' y.e <- scale(train.dat$y.e, center = F, scale = T)
+#' treat <- train.dat$treat
+#' #with(train.dat,
 #'     build_MOTTE_tree(x.b, x.e, factor(treat), y.b, y.e,
 #'                      nodesize=30, nsplits=NULL, left.out = 0.1)
-#'  )
+#'  #)
 #'
 
 build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
-                        nodesize, nsplits, left.out) {
+                        nodesize, nsplits, left.out, seed = 1) {
+
+  set.seed(seed)
 
   trt.lvl <- levels(treat)
   if(length(trt.lvl) != 2)
@@ -107,14 +115,15 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   trt.1.left.matrix <-
     rbind(
       cbind(x.b[treat==trt.lvl[1],,drop=FALSE],matrix(0, nrow=n.treat.1, ncol=p+q)),
-      cbind(matrix(0,nrow=n.treat.1,ncol=2*p),diff.y[treat==trt.lvl[1],,drop=FALSE]),
-      cbind(x.b[treat==trt.lvl[1],,drop=FALSE],matrix(0, nrow=n.treat.1, ncol=p+q))
+      cbind(matrix(0,nrow=n.treat.1,ncol=p),diff.x[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=q)),
+      cbind(matrix(0,nrow=n.treat.1,ncol=2*p),diff.y[treat==trt.lvl[1],,drop=FALSE])
+
     )
   trt.1.right.matrix <-
     rbind(
       cbind(matrix(0,nrow=n.treat.1,ncol=p),diff.x[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=q)),
-      cbind(matrix(0,nrow=n.treat.1,ncol=p),diff.x[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=q)),
-      cbind(matrix(0,nrow=n.treat.1,ncol=2*p),diff.y[treat==trt.lvl[1],,drop=FALSE])
+      cbind(matrix(0,nrow=n.treat.1,ncol=2*p),diff.y[treat==trt.lvl[1],,drop=FALSE]),
+      cbind(x.b[treat==trt.lvl[1],,drop=FALSE],matrix(0, nrow=n.treat.1, ncol=p+q))
     )
 
   # Trtment lvl 2
@@ -122,15 +131,15 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   trt.2.left.matrix <-
     rbind(
       cbind(x.b[treat==trt.lvl[2],,drop=FALSE],matrix(0, nrow=n-n.treat.1, ncol=p+q)),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=2*p),diff.y[treat==trt.lvl[2],,drop=FALSE]),
-      cbind(x.b[treat==trt.lvl[2],,drop=FALSE],matrix(0, nrow=n-n.treat.1, ncol=p+q))
+      cbind(matrix(0,nrow=n-n.treat.1,ncol=p),diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=q)),
+      cbind(matrix(0,nrow=n-n.treat.1,ncol=2*p),diff.y[treat==trt.lvl[2],,drop=FALSE])
     )
   trt.2.right.matrix <-
     rbind(
       cbind(matrix(0,nrow=n-n.treat.1,ncol=p),diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=q)),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=p),diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=q)),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=2*p),diff.y[treat==trt.lvl[2],,drop=FALSE])
-    )
+      cbind(matrix(0,nrow=n-n.treat.1,ncol=2*p),diff.y[treat==trt.lvl[2],,drop=FALSE]),
+      cbind(x.b[treat==trt.lvl[2],,drop=FALSE],matrix(0, nrow=n-n.treat.1, ncol=p+q))
+         )
 
   # Conduct CCA
   trt.1.cancor.res <- CCA::cc(trt.1.left.matrix, trt.1.right.matrix)
