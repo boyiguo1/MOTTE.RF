@@ -142,12 +142,12 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   # TODO: write a function that extract ccs.
   trt.1.x.loading <- trt.1.cancor.res$xcoef[1:p,1]
   # diff.y.0.loading <- cancor.res$xcoef[(3*p+1):(3*p+q),1]
-  trt.1.y.loading <- trt.1.cancor.res$xcoef[(2*p+1):(ncol(Left.matrix)),1]
+  #trt.1.y.loading <- trt.1.cancor.res$xcoef[(2*p+1):(ncol(Left.matrix)),1]
   # TODO: check if xcoef give the same as ycoef
 
   trt.2.x.loading <- trt.2.cancor.res$xcoef[1:p,1]
   # diff.y.0.loading <- cancor.res$xcoef[(3*p+1):(3*p+q),1]
-  trt.2.y.loading <- trt.2.cancor.res$xcoef[(2*p+1):(ncol(Left.matrix)),1]
+  #trt.2.y.loading <- trt.2.cancor.res$xcoef[(2*p+1):(ncol(Left.matrix)),1]
   # TODO: check if xcoef give the same as ycoef
 
 
@@ -158,7 +158,7 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
 
 
   x.proj <- x.b %*% (trt.2.x.loading - trt.1.x.loading)
-  y.proj <- diff.y %*% (trt.2.x.loading - trt.1.x.loading)
+  #y.proj <- diff.y %*% (trt.2.x.loading - trt.1.x.loading)
 
 
   # Generate a vector consists of split value candidates
@@ -201,10 +201,13 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
 
     L.length <- sum(L.node.indices)
     R.length <- sum(R.node.indices)
-
-    total.var <- (n-1)/n*var(y0.proj) + (n-1)/n*var(y1.proj)
-    left.var <- (L.length-1)/n*(var(y0.proj[L.node.indices]) + var(y1.proj[L.node.indices]))
-    right.var <- (R.length-1)/n*(var(y0.proj[R.node.indices]) + var(y1.proj[R.node.indices]))
+    # revision to split based on treatment difference reflected on X^b
+    #total.var <- (n-1)/n*var(y0.proj) + (n-1)/n*var(y1.proj)
+    total.var <- (n-1)/n*var(x.proj)
+    #left.var <- (L.length-1)/n*(var(y0.proj[L.node.indices]) + var(y1.proj[L.node.indices]))
+    left.var <- (L.length-1)/n*var(x.proj[L.node.indices])
+    #right.var <- (R.length-1)/n*(var(y0.proj[R.node.indices]) + var(y1.proj[R.node.indices]))
+    right.var <- (R.length-1)/n*var(x.proj[R.node.indices])
     return(
       matrix(
         c(x,total.var-left.var-right.var),
@@ -263,6 +266,6 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
 
 #TODO: add a recursive function, which contains standardization of the data.
 # Record the centers
-x.center <- attr(scale(x.b, center = T, scale = FALSE),"scaled:center")
-diff.y.0.center <- attr(scale(diff.y[treat==trt.lvl[1],,drop=FALSE],center = T, scale = FALSE),"scaled:center")
-diff.y.1.center <- attr(scale(diff.y[treat==trt.lvl[2],,drop=FALSE],center = T, scale = FALSE),"scaled:center")
+# x.center <- attr(scale(x.b, center = T, scale = FALSE),"scaled:center")
+# diff.y.0.center <- attr(scale(diff.y[treat==trt.lvl[1],,drop=FALSE],center = T, scale = FALSE),"scaled:center")
+# diff.y.1.center <- attr(scale(diff.y[treat==trt.lvl[2],,drop=FALSE],center = T, scale = FALSE),"scaled:center")
