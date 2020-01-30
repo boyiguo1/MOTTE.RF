@@ -4,12 +4,19 @@
 #' @param n.test An integer value, sample size for testing data
 #' @param p An integer value, the dimensionality of covaraites (X)
 #' @param q An integer value, the dimensionality of responses (Y)
-#' @param pi An fraction value, the ratio between treatment groups
-#' #@param seed An integer value, set the seed number
+#' @param ratio An fraction value, the ratio between treatment groups
+#' @param cov.mat Covariance matrix for X.b
+#' @param trt.f character, the name of treatment effect funciton
+#' @param link.f character, the name of treatment effect funciton
+#' @param B matrix, the coefficient matrix used in the trt.f
+#' @param Z matrix, the coefficient matrix used in the link.f
 #'
 #' @return A nested list that contain training data and testing data. TODO: add more introdcution to whats in the list
+#'
 #' @export
+#'
 #' @importFrom MASS mvrnorm
+#' @importFrom stats rbinom
 #'
 #' @examples
 #' set.seed(1)
@@ -21,7 +28,6 @@
 #' B = B, Z = Z)
 
 # TODO: setup the magnitude for the errors
-
 sim_MOTTE_data <- function(
   n.train = 500, # <-  500
   n.test = 200, # <- 200
@@ -136,7 +142,7 @@ create.B <- function(p){
 #' @export
 #'
 #' @examples
-#' create.z(10,3)
+#' create.Z(10,3)
 create.Z <- function(p, q){
   matrix(
     c(rep(1,3), rep(0, p-3),

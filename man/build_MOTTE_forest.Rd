@@ -46,12 +46,23 @@ a list of data.tree. Even when only one tree construct, it is a list containing 
 The function to fitting tree/trees
 }
 \examples{
+#' set.seed(1)
+B <- create.B(10)
+Z <- create.Z(10, 3)
+
 tmp.dat <- sim_MOTTE_data( n.train = 500, n.test = 200,
-p = 10, q = 3, pi = 0.5)
+p = 10, q = 3, ratio = 0.5,
+B = B, Z = Z)
 
 train.dat <- tmp.dat$train
 
-with(train.dat,
+x.b <- scale(train.dat$x.b, center = FALSE, scale = TRUE)
+x.e <- scale(train.dat$x.e, center = FALSE, scale = TRUE)
+y.b <- scale(train.dat$y.b, center = FALSE, scale = TRUE)
+y.e <- scale(train.dat$y.e, center = FALSE, scale = TRUE)
+treat <- train.dat$trt
+
+# with(train.dat,
     build_MOTTE_forest(x.b, x.e, treat, y.b, y.e)
- )
+#)
 }

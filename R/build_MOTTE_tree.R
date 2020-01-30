@@ -37,16 +37,21 @@
 # TODO: add description to setting reference trt.lvl. as R convention, the first level from levels function are use as the refence group
 #       i.e. treatment 0/ treatment control
 #' @examples
+#' set.seed(1)
+#' B <- create.B(10)
+#' Z <- create.Z(10, 3)
+#'
 #' tmp.dat <- sim_MOTTE_data( n.train = 500, n.test = 200,
-#' p = 10, q = 3, ratio = 0.5)
+#' p = 10, q = 3, ratio = 0.5,
+#' B = B, Z = Z)
 #'
 #' train.dat <- tmp.dat$train
 #'
-#' x.b <- scale(train.dat$x.b, center = F, scale = T)
-#' x.e <- scale(train.dat$x.e, center = F, scale = T)
-#' y.b <- scale(train.dat$y.b, center = F, scale = T)
-#' y.e <- scale(train.dat$y.e, center = F, scale = T)
-#' treat <- train.dat$treat
+#' x.b <- scale(train.dat$x.b, center = FALSE, scale = TRUE)
+#' x.e <- scale(train.dat$x.e, center = FALSE, scale = TRUE)
+#' y.b <- scale(train.dat$y.b, center = FALSE, scale = TRUE)
+#' y.e <- scale(train.dat$y.e, center = FALSE, scale = TRUE)
+#' treat <- train.dat$trt
 #' #with(train.dat,
 #'     build_MOTTE_tree(x.b, x.e, factor(treat), y.b, y.e,
 #'                      nodesize=30, nsplits=NULL, left.out = 0.1)

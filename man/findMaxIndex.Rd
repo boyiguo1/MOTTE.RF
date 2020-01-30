@@ -2,7 +2,7 @@
 % Please edit documentation in R/helper_functions.R
 \name{findMaxIndex}
 \alias{findMaxIndex}
-\title{Title}
+\title{Didn't find this function in tree ir forest yet. DOn't know if this is necessary}
 \usage{
 findMaxIndex(x, epsilon)
 }
@@ -15,5 +15,5 @@ findMaxIndex(x, epsilon)
 
 }
 \description{
-Title
+Didn't find this function in tree ir forest yet. DOn't know if this is necessary
 }

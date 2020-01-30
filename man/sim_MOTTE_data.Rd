@@ -4,7 +4,18 @@
 \alias{sim_MOTTE_data}
 \title{Simulate MOTTE formated data}
 \usage{
-sim_MOTTE_data(n.train, n.test, p, q, pi, seed = 1)
+sim_MOTTE_data(
+  n.train = 500,
+  n.test = 200,
+  p = 10,
+  q = 3,
+  ratio = 0.5,
+  cov.mat = diag(p),
+  trt.f = c("Linear", "Polynomial"),
+  link.f = c("Linear", "Polynomial"),
+  B,
+  Z
+)
 }
 \arguments{
 \item{n.train}{An integer value, sample size for training data}
@@ -15,17 +26,30 @@ sim_MOTTE_data(n.train, n.test, p, q, pi, seed = 1)
 
 \item{q}{An integer value, the dimensionality of responses (Y)}
 
-\item{pi}{An fraction value, the ratio between treatment groups}
+\item{ratio}{An fraction value, the ratio between treatment groups}
 
-\item{seed}{An integer value, set the seed number}
+\item{cov.mat}{Covariance matrix for X.b}
+
+\item{trt.f}{character, the name of treatment effect funciton}
+
+\item{link.f}{character, the name of treatment effect funciton}
+
+\item{B}{matrix, the coefficient matrix used in the trt.f}
+
+\item{Z}{matrix, the coefficient matrix used in the link.f}
 }
 \value{
-A nested list that contain training data and testing data
+A nested list that contain training data and testing data. TODO: add more introdcution to whats in the list
 }
 \description{
 Simulate MOTTE formated data
 }
 \examples{
+set.seed(1)
+B <- create.B(10)
+Z <- create.Z(10, 3)
+
 sim_MOTTE_data( n.train = 500, n.test = 200,
-p = 10, q = 3, pi = 0.5)
+p = 10, q = 3, ratio = 0.5,
+B = B, Z = Z)
 }

@@ -4,7 +4,17 @@
 \alias{build_MOTTE_tree}
 \title{Fitting MOTTE Tree in the MOTTE.RF}
 \usage{
-build_MOTTE_tree(x.b, x.e, treat, y.b, y.e, nodesize, nsplits, left.out)
+build_MOTTE_tree(
+  x.b,
+  x.e,
+  treat,
+  y.b,
+  y.e,
+  nodesize,
+  nsplits,
+  left.out,
+  seed = 1
+)
 }
 \arguments{
 \item{x.b}{Pre-treatment covariates, i.e. microbiomes}
@@ -22,6 +32,8 @@ build_MOTTE_tree(x.b, x.e, treat, y.b, y.e, nodesize, nsplits, left.out)
 \item{nsplits}{A numeric value, the number of maximum splits}
 
 \item{left.out}{left.out is ensure at least left.out*2 sample for either treated or untreated sample in the group}
+
+\item{seed}{a seed number to generate the random subsets of split candidates. Doesn't work when applying nsplit==NULL}
 }
 \value{
 A data.tree object, node
@@ -30,14 +42,24 @@ A data.tree object, node
 Fitting MOTTE Tree in the MOTTE.RF
 }
 \examples{
+set.seed(1)
+B <- create.B(10)
+Z <- create.Z(10, 3)
+
 tmp.dat <- sim_MOTTE_data( n.train = 500, n.test = 200,
-p = 10, q = 3, pi = 0.5)
+p = 10, q = 3, ratio = 0.5,
+B = B, Z = Z)
 
 train.dat <- tmp.dat$train
 
-with(train.dat,
+x.b <- scale(train.dat$x.b, center = FALSE, scale = TRUE)
+x.e <- scale(train.dat$x.e, center = FALSE, scale = TRUE)
+y.b <- scale(train.dat$y.b, center = FALSE, scale = TRUE)
+y.e <- scale(train.dat$y.e, center = FALSE, scale = TRUE)
+treat <- train.dat$trt
+#with(train.dat,
     build_MOTTE_tree(x.b, x.e, factor(treat), y.b, y.e,
                      nodesize=30, nsplits=NULL, left.out = 0.1)
- )
+ #)
 
 }

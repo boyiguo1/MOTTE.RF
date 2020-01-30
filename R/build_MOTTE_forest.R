@@ -30,14 +30,25 @@
 #' @importFrom foreach foreach %dopar%
 #'
 #' @examples
+#' #' set.seed(1)
+#' B <- create.B(10)
+#' Z <- create.Z(10, 3)
+#'
 #' tmp.dat <- sim_MOTTE_data( n.train = 500, n.test = 200,
-#' p = 10, q = 3, pi = 0.5)
+#' p = 10, q = 3, ratio = 0.5,
+#' B = B, Z = Z)
 #'
 #' train.dat <- tmp.dat$train
 #'
-#' with(train.dat,
+#' x.b <- scale(train.dat$x.b, center = FALSE, scale = TRUE)
+#' x.e <- scale(train.dat$x.e, center = FALSE, scale = TRUE)
+#' y.b <- scale(train.dat$y.b, center = FALSE, scale = TRUE)
+#' y.e <- scale(train.dat$y.e, center = FALSE, scale = TRUE)
+#' treat <- train.dat$trt
+#'
+#' # with(train.dat,
 #'     build_MOTTE_forest(x.b, x.e, treat, y.b, y.e)
-#'  )
+#' #)
 
 build_MOTTE_forest <- function(
   x.b, x.e,
@@ -57,8 +68,9 @@ build_MOTTE_forest <- function(
   if(!is.matrix(x.b) || !is.matrix(x.e) || !is.matrix(y.b) || !is.matrix(y.e))
     stop("Error Message: x.b, x.e, y.b, y.e must be matrices")
 
-  if(!is.vector(treat))
-    stop("Error Message: treat must be a vector")
+# TODO: sort out the data structures in the future
+# if(!is.vector(treat))
+#    stop("Error Message: treat must be a vector")
 
   if(length(unique(
     nrow(x.b),nrow(x.e),length(treat),nrow(y.b), nrow(y.b)
