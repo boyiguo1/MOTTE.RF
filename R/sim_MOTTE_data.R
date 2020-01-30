@@ -106,7 +106,7 @@ sim_MOTTE_data <- function(
 }
 
 #' Title
-#'
+#' #TODO: improve the documentation
 #' @param p The dimension of the design matrix
 #'
 #' @return A matrix
@@ -128,7 +128,7 @@ create.B <- function(p){
 }
 
 #' Title
-#'
+#' #TODO: improve the documentation
 #' @param p The number of rows
 #' @param q The number of columns
 #'
