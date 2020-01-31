@@ -22,7 +22,7 @@ recommendResult <- function(tree.list,x.b,w) {
     if(nrow(w.matrix)!=nrow(x.b))
       stop("Error Message: Inconsistent dimension between x.b and w")
   }
-    
+
   return(
     apply(x.b,1,FUN=function(x,tree.list) {
       comp <- recommendResult.single(tree.list,x)
@@ -88,6 +88,11 @@ recommendResult.single <- function(tree.list, x.b){
 }
 
 
+calcTrtDiff.single <- function(forest, x.b){
+  result.list <- traverseForest(tree.list,x.b)
+
+}
+
 #' Traverse Forest
 #'  A wrapper function using traverseTree to traverse the forest
 #'
@@ -101,7 +106,7 @@ recommendResult.single <- function(tree.list, x.b){
 traverseForest <- function(forest, x.b) {
   # Check root is a list of trees
   # Check x.b is one observation
-  return(lapply(forest,traverseTree,x.b=x.b))
+  return(purrr::map_dfr(forest,traverseTree,x.b=x.b))
 }
 
 
@@ -127,7 +132,7 @@ traverseTree <- function(root, x.b){
   split.value <- root$split.value
 
   if(root$isLeaf)
-    return(list(OUTCOME=root$Outcome, TREATMENT=root$Treatment))
+    return(data.frame(OUTCOME=root$Outcome, TREATMENT=root$Treatment))
   else{
     # Test cases
     if(length(root$children) > 2)
@@ -137,7 +142,8 @@ traverseTree <- function(root, x.b){
 
     ge.node.index <- ifelse(root$children[[1]]$side,1,2)
     l.node.index <- ifelse(root$children[[1]]$side,2,1)
-    if((x.b-root$xcenter)%*%split.comb>=split.value)
+
+    if(x.b%*%split.comb>=split.value)
       return(traverseTree(root$children[[ge.node.index]],x.b))
     else
       return(traverseTree(root$children[[l.node.index]],x.b))
