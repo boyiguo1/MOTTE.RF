@@ -88,9 +88,21 @@ recommendResult.single <- function(tree.list, x.b){
 }
 
 
-calcTrtDiff.single <- function(forest, x.b){
-  result.list <- traverseForest(tree.list,x.b)
+calcTrtDiff <- function(forest, x.b){
+  apply(x.b, 1, FUN = function(x, forest)
+    calcTrtDiff.single(forest = forest, x.b=x),
+    forest = forest) %>%
+    bind_rows()
+}
 
+calcTrtDiff.single <- function(forest, x.b){
+  res <- traverseForest(forest, x.b) %>%
+    group_by(TREATMENT) %>%
+    summarize_all(.funs = mean, na.rm=TRUE) %>%
+    #TODO: Improve the treatment naming part for general function use
+    ungroup %>% select(-TREATMENT)
+
+  res[2,]-res[1,]
 }
 
 #' Traverse Forest
