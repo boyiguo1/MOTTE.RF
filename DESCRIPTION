@@ -23,4 +23,5 @@ Imports:
     doParallel,
     foreach,
     magrittr,
-    purrr
+    purrr,
+    dplyr

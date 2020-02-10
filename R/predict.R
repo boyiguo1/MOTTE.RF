@@ -101,10 +101,11 @@ calcTrtDiff <- function(forest, x.b){
   apply(x.b, 1, FUN = function(x, forest)
     calcTrtDiff.single(forest = forest, x.b=x),
     forest = forest) %>%
-    bind_rows()
+    dplyr::bind_rows()
 }
 
 #' @importFrom magrittr "%>%"
+#' @import dplyr
 calcTrtDiff.single <- function(forest, x.b){
   res <- traverseForest(forest, x.b) %>%
     group_by(TREATMENT) %>%
