@@ -21,4 +21,6 @@ Imports:
     MASS,
     stats,
     doParallel,
-    foreach
+    foreach,
+    magrittr,
+    purrr

@@ -88,6 +88,15 @@ recommendResult.single <- function(tree.list, x.b){
 }
 
 
+#' Title
+#'
+#' @param forest A MOTTE.RF object
+#' @param x.b a data matrix for the testing data
+#'
+#' @return A data matrix that contains the treatment difference
+#' @export
+#'
+#' @examples
 calcTrtDiff <- function(forest, x.b){
   apply(x.b, 1, FUN = function(x, forest)
     calcTrtDiff.single(forest = forest, x.b=x),
@@ -95,6 +104,7 @@ calcTrtDiff <- function(forest, x.b){
     bind_rows()
 }
 
+#' @importFrom magrittr "%>%"
 calcTrtDiff.single <- function(forest, x.b){
   res <- traverseForest(forest, x.b) %>%
     group_by(TREATMENT) %>%
