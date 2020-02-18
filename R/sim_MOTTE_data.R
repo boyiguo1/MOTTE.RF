@@ -58,8 +58,8 @@ sim_MOTTE_data <- function(
 ){
 
   # TODO: extract this as argument for the parameter
-  c.x <- 2
-  c.y <- 2
+  c.x <- sum((1:3)^2)/2
+  c.y <- sum((1:3)^2)/2
 
   trt.f <- trt.f[[1]]
   link.f <- link.f[[1]]
