@@ -138,9 +138,9 @@ create.B <- function(p){
     stop("Minimum value for p is 9")
   cbind(
     matrix(
-      c(rep(1,3), rep(0, p-3),
-        rep(0,3), rep(1,3), rep(0, p-6),
-        rep(0,6), rep(1,3), rep(0, p-9)),
+      c(1:3, rep(0, p-3),
+        rep(0,3), 1:3, rep(0, p-6),
+        rep(0,6), 1:3, rep(0, p-9)),
       nrow = p, ncol = 3),
     matrix(0,nrow = p, ncol = p-3)
   )
@@ -158,9 +158,9 @@ create.B <- function(p){
 #' create.Z(10,3)
 create.Z <- function(p, q){
   matrix(
-    c(rep(1,3), rep(0, p-3),
-      rep(0,3), rep(1,3), rep(0, p-6),
-      rep(0,6), rep(1,3), rep(0, p-9),
+    c(1:3, rep(0, p-3),
+      rep(0,3), 1:3, rep(0, p-6),
+      rep(0,6), 1:3, rep(0, p-9),
       rep(0, p*(q-3))
       ),
     nrow = p, ncol = q
