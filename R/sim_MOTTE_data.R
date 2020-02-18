@@ -26,6 +26,19 @@
 #' sim_MOTTE_data( n.train = 500, n.test = 200,
 #' p = 10, q = 3, ratio = 0.5,
 #' B = B, Z = Z)
+#'
+
+
+# n.train = 200
+# n.test = 100
+# p = 10
+# q = 3
+# ratio = 0.5
+# cov.mat = diag(p)
+# trt.f = "Polynomial"
+# link.f = "Polynomial"
+# B = create.B(p)
+# Z = create.Z(p,q)
 
 # TODO: setup the magnitude for the errors
 sim_MOTTE_data <- function(
@@ -58,7 +71,7 @@ sim_MOTTE_data <- function(
                     stop("Link function doesn't exist, choose from 'Linear' or 'Polynomial'"))
   .trt.f <- switch(trt.f,
                    "Linear" = function(x, trt){sweep(x, 1, trt, "*")%*%B},
-                   "Polynomial" = function(x, trt){(sweep(x, 1, trt, "*")^2)%*%B},
+                   "Polynomial" = function(x, trt){(sweep(x^2, 1, trt, "*"))%*%B},
                    stop("Trt.f doesn't exist, choose from 'Linear' or 'Polynomial'"))
 
 
