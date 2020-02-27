@@ -161,17 +161,17 @@ build_MOTTE_tree_y <- function(x.b, x.e, treat, y.b, y.e,
   # In this step we use the first canonical direction
   # Each xceof column is one canonical loading
   # TODO: write a function that extract ccs.
-  #trt.1.x.loading <- trt.1.cancor.res$xcoef[1:p,1]
-  #trt.2.x.loading <- trt.2.cancor.res$xcoef[1:p,1]
+  trt.1.x.loading <- trt.1.cancor.res$xcoef[1:p,1]
+  trt.2.x.loading <- trt.2.cancor.res$xcoef[1:p,1]
   # TODO: verify this
-  diff.y.0.loading <- trt.1.cancor.res$xcoef[(2*p+1),(2*p+q)]
-  diff.y.1.loading <- trt.2.cancor.res$xcoef[(2*p+1),(2*p+q)]
+  diff.y.0.loading <- trt.1.cancor.res$xcoef[(2*p+1):(2*p+q),1]
+  diff.y.1.loading <- trt.2.cancor.res$xcoef[(2*p+1):(2*p+q),1]
   #trt.2.y.loading <- trt.2.cancor.res$xcoef[(2*p+1):(ncol(Left.matrix)),1]
   # TODO: check if xcoef give the same as ycoef
 
 
   # Calculate the canonical variates
-  # x.proj <- scale(x.b,center=x.center, scale=F)%*%x.loading
+   #x.proj <- scale(x.b,center=x.center, scale=F)%*%x.loading
   y0.proj <- diff.y %*% diff.y.0.loading
   y1.proj <- diff.y %*% diff.y.1.loading
 
