@@ -112,8 +112,8 @@ calcTrtDiff.single <- function(forest, x.b){
     summarize_all(.funs = mean, na.rm=TRUE) %>%
     #TODO: Improve the treatment naming part for general function use
     ungroup %>% select(-TREATMENT)
-
-  res[2,]-res[1,]
+  #TODO: this is Bad
+  res[1,]-res[2,]
 }
 
 #' Traverse Forest
