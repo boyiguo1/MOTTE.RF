@@ -52,4 +52,5 @@ Z <- create.Z(10, 3)
 sim_MOTTE_data( n.train = 500, n.test = 200,
 p = 10, q = 3, ratio = 0.5,
 B = B, Z = Z)
+
 }
