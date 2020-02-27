@@ -58,10 +58,12 @@
 #'  #)
 #'
 
-build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
-                        nodesize, nsplits, left.out, seed = 1) {
+build_MOTTE_tree_y <- function(x.b, x.e, treat, y.b, y.e,
+                        nodesize, nsplits, left.out#) {
+                        #, seed = 1
+  ) {
 
-  set.seed(seed)
+  #set.seed(seed)
 
   trt.lvl <- levels(treat)
   if(length(trt.lvl) != 2)
@@ -159,17 +161,19 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   # In this step we use the first canonical direction
   # Each xceof column is one canonical loading
   # TODO: write a function that extract ccs.
-  trt.1.x.loading <- trt.1.cancor.res$xcoef[1:p,1]
-  trt.2.x.loading <- trt.2.cancor.res$xcoef[1:p,1]
-  # diff.y.0.loading <- cancor.res$xcoef[(3*p+1):(3*p+q),1]
+  #trt.1.x.loading <- trt.1.cancor.res$xcoef[1:p,1]
+  #trt.2.x.loading <- trt.2.cancor.res$xcoef[1:p,1]
+  # TODO: verify this
+  diff.y.0.loading <- trt.1.cancor.res$xcoef[(2*p+1),(2*p+q)]
+  diff.y.1.loading <- trt.2.cancor.res$xcoef[(2*p+1),(2*p+q)]
   #trt.2.y.loading <- trt.2.cancor.res$xcoef[(2*p+1):(ncol(Left.matrix)),1]
   # TODO: check if xcoef give the same as ycoef
 
 
   # Calculate the canonical variates
   # x.proj <- scale(x.b,center=x.center, scale=F)%*%x.loading
-  # y0.proj <- scale(diff.y, center = diff.y.0.center, scale=F)%*%diff.y.0.loading
-  # y1.proj <- scale(diff.y, center = diff.y.1.center, scale= F) %*% diff.y.1.loading
+  y0.proj <- diff.y %*% diff.y.0.loading
+  y1.proj <- diff.y %*% diff.y.1.loading
 
   x.loading <- trt.2.x.loading - trt.1.x.loading
   x.proj <- x.b %*% x.loading
@@ -216,15 +220,18 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
     L.node.indices <- x.proj >= x
     R.node.indices <- x.proj < x
 
+    t1.indices <- treat == trt.lvl[1]
+    t2.indices <- treat == trt.lvl[2]
+
     L.length <- sum(L.node.indices)
     R.length <- sum(R.node.indices)
     # revision to split based on treatment difference reflected on X^b
     #total.var <- (n-1)/n*var(y0.proj) + (n-1)/n*var(y1.proj)
     total.var <- (n-1)/n*var(x.proj)
-    #left.var <- (L.length-1)/n*(var(y0.proj[L.node.indices]) + var(y1.proj[L.node.indices]))
-    left.var <- (L.length-1)/n*var(x.proj[L.node.indices])
-    #right.var <- (R.length-1)/n*(var(y0.proj[R.node.indices]) + var(y1.proj[R.node.indices]))
-    right.var <- (R.length-1)/n*var(x.proj[R.node.indices])
+    left.var <- (L.length-1)/n*(var(y0.proj[L.node.indices & t1.indices]) + var(y1.proj[L.node.indices & t2.indices]))
+    #left.var <- (L.length-1)/n*var(x.proj[L.node.indices])
+    right.var <- (R.length-1)/n*(var(y0.proj[R.node.indices & t1.indices]) + var(y1.proj[R.node.indices & t2.indices]))
+    #right.var <- (R.length-1)/n*var(x.proj[R.node.indices])
     return(
       matrix(
         c(x,total.var-left.var-right.var),
