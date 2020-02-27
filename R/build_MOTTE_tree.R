@@ -59,9 +59,10 @@
 #'
 
 build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
-                        nodesize, nsplits, left.out, seed = 1) {
+                        nodesize, nsplits, left.out#, seed = 1
+                        ) {
 
-  set.seed(seed)
+  # set.seed(seed)
 
   trt.lvl <- levels(treat)
   if(length(trt.lvl) != 2)
