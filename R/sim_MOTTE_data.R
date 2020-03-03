@@ -50,7 +50,7 @@ sim_MOTTE_data <- function(
   # TODO: set up error prevention for cov.mat, i.e. measuring the dimension
   cov.mat = diag(p),
   # TODO: incorporate the linear and polynormial for both treat.f and link.f in the code
-  trt.f = c("Linear", "Polynomial"),
+  trt.f = c("Linear", "Polynomial", "Box"),
   link.f = c("Linear", "Polynomial"),
   B ,
   Z
@@ -72,7 +72,17 @@ sim_MOTTE_data <- function(
   .trt.f <- switch(trt.f,
                    "Linear" = function(x, trt){sweep(x, 1, trt, "*")%*%B},
                    "Polynomial" = function(x, trt){(sweep(x^2, 1, trt, "*"))%*%B},
-                   stop("Trt.f doesn't exist, choose from 'Linear' or 'Polynomial'"))
+                   "Box" = function(x){
+                      .x <- x
+                      for (i in 1: nrow(.x)) {
+                        if(abs(x[i,1])<1 & abs(x[i,2])<1) .x[i, 1:3] <- 0
+                        if(abs(x[i,4])<1 & abs(x[i,5])<1) .x[i, 4:6] <- 0
+                        if(abs(x[i,7])<1 & abs(x[i,8])<1) .x[i, 7:9] <- 0
+                      }
+                     sweep(.x, 1, trt, "*") %*% B
+                   },
+                   stop("Trt.f doesn't exist, choose from 'Linear' or 'Polynomial' or 'Box'")
+  )
 
 
   # Simulate the binary treatment assignment for training data
