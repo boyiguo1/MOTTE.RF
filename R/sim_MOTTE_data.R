@@ -72,7 +72,7 @@ sim_MOTTE_data <- function(
   .trt.f <- switch(trt.f,
                    "Linear" = function(x, trt){sweep(x, 1, trt, "*")%*%B},
                    "Polynomial" = function(x, trt){(sweep(x^2, 1, trt, "*"))%*%B},
-                   "Box" = function(x){
+                   "Box" = function(x, trt){
                       .x <- x
                       for (i in 1: nrow(.x)) {
                         if(abs(x[i,1])<1 & abs(x[i,2])<1) .x[i, 1:3] <- 0
