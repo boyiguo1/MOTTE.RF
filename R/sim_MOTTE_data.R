@@ -59,7 +59,6 @@ sim_MOTTE_data <- function(
   # TODO: extract this as argument for the parameter
   c.x <- sum((1:3)^2)/2
   c.y <- sum((1:3)^2)/2
-
   trt.f <- trt.f[[1]]
   link.f <- link.f[[1]]
 
@@ -91,8 +90,6 @@ sim_MOTTE_data <- function(
 
   # Simulate x.b
   X.train.base <- MASS::mvrnorm(n.train,rep(0,p), cov.mat)
-
-
   X.train.end <- X.train.base + .trt.f(X.train.base, ifelse(Trt.train=="Trt 1", 1, -1)) + mvrnorm(n.train, rep(0,p), c.x*diag(p))
 
   Y.train.base <- .link.f(X.train.base) + mvrnorm(n.train, rep(0,q), c.y*diag(q))
