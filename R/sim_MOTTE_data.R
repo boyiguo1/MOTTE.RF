@@ -4,7 +4,6 @@
 #' @param n.test An integer value, sample size for testing data
 #' @param p An integer value, the dimensionality of covaraites (X)
 #' @param q An integer value, the dimensionality of responses (Y)
-<<<<<<< HEAD
 #' @param ratio An fraction value, the ratio between treatment groups
 #' @param cov.mat Covariance matrix for X.b
 #' @param trt.f character, the name of treatment effect funciton
@@ -14,25 +13,16 @@
 #'
 #' @return A nested list that contain training data and testing data. TODO: add more introdcution to whats in the list
 #'
-=======
-#' @param pi An fraction value, the ratio between treatment groups
-#' @param seed An integer value, set the seed number
-#'
-#' @return A nested list that contain training data and testing data
->>>>>>> parent of bd7c713... Format Change
 #' @export
 #'
 #' @importFrom MASS mvrnorm
 #' @importFrom stats rbinom
 #'
 #' @examples
-<<<<<<< HEAD
 #' set.seed(1)
 #' B <- create.B(10)
 #' Z <- create.Z(10, 3)
 #'
-=======
->>>>>>> parent of bd7c713... Format Change
 #' sim_MOTTE_data( n.train = 500, n.test = 200,
 #' p = 10, q = 3, ratio = 0.5,
 #' B = B, Z = Z)
@@ -52,7 +42,6 @@
 
 # TODO: setup the magnitude for the errors
 sim_MOTTE_data <- function(
-<<<<<<< HEAD
   n.train = 500, # <-  500
   n.test = 200, # <- 200
   p = 10, #  <- 10
@@ -65,7 +54,6 @@ sim_MOTTE_data <- function(
   link.f = c("Linear", "Polynomial"),
   B ,
   Z
-  #seed = 1
 ){
 
   # TODO: extract this as argument for the parameter
@@ -100,38 +88,8 @@ sim_MOTTE_data <- function(
   # Clarification, when trt1, X.e = X.b + X.b%*%B and trt2, X.2 =X.b - X.b%*%B
   Trt.lvls <- c("Trt 1", "Trt 2")
   Trt.train <- factor(Trt.lvls[rbinom(n.train, 1, ratio)+1])
-=======
-  n.train, # <-  500
-  n.test, # <- 200
-  p, #  <- 10
-  q, #  <- 3
-  # pi is the ratio between treatment groups
-  pi, # <- 0.5,
-  seed = 1
-){
-  set.seed(seed)
-  # Simulate the treatment
-  Treat.train <- sample(
-    c(
-      rep(1, floor(n.train*pi)),           # Treatment Group 1
-      rep(0, ceiling(n.train*(1-pi)))      # Treatment Group 2
-    )
-  )
-
-  # Beta matrix
-  Z <- matrix(
-    cbind(
-      c(rep(1,5),rep(0,5)),
-      c(rep(0,2),rep(1,5),rep(0,3)),
-      c(rep(0,5),rep(1,5))
-    ),nrow=p,ncol=q)
->>>>>>> parent of bd7c713... Format Change
-
-  # Simulate the autoregressive covariance matrix of X
-  # cov.mat <- 0.8^(abs(outer(1:p,1:p,"-")))
 
   # Simulate x.b
-<<<<<<< HEAD
   X.train.base <- MASS::mvrnorm(n.train,rep(0,p), cov.mat)
 
 
@@ -139,20 +97,6 @@ sim_MOTTE_data <- function(
 
   Y.train.base <- .link.f(X.train.base) + mvrnorm(n.train, rep(0,q), c.y*diag(q))
   Y.train.end <- .link.f(X.train.end) + mvrnorm(n.train, rep(0,q), c.y*diag(q))
-=======
-  #X.train.base <- mvrnorm(n.train,rep(0,p),x.sig)
-  X.train.base <- MASS::mvrnorm(n.train,rep(0,p),diag(p))
-
-
-  X.train.end <- X.train.base
-  X.train.end[,5] <- X.train.end[,5] + treat.effect(X.train.base,Treat.train,1,3)
-  X.train.end[,6] <- X.train.end[,6] + treat.effect(X.train.base,Treat.train,1,3)
-  X.train.end[,7]<- X.train.end[,7] + treat.effect(X.train.base,Treat.train,1,3)
-  X.train.end <- X.train.end + mvrnorm(n.train, rep(0,p), 0.01*diag(p))
-
-  Y.train.base <- (X.train.base)%*%Z + mvrnorm(n.train, rep(0,q), 0.01*diag(q))
-  Y.train.end <- (X.train.end)%*%Z + mvrnorm(n.train, rep(0,q), 0.01*diag(q))
->>>>>>> parent of bd7c713... Format Change
 
 
   ####################################
