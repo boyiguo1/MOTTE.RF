@@ -161,8 +161,8 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   # In this step we use the first canonical direction
   # Each xceof column is one canonical loading
   x.loading <- cancor.res$xcoef[1:p,1]
-  diff.y.0.loading <- cancor.res$xcoef[(3*p+1):(3*p+q),1]
-  diff.y.1.loading <- cancor.res$xcoef[(3*p+q+1):(ncol(Left.matrix)),1]
+  # diff.y.0.loading <- cancor.res$xcoef[(3*p+1):(3*p+q),1]
+  # diff.y.1.loading <- cancor.res$xcoef[(3*p+q+1):(ncol(Left.matrix)),1]
 
   # Calculate the canonical variates
   x.proj <- scale(x.b,center=x.center, scale=F)%*%x.loading
