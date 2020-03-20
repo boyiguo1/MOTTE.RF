@@ -124,20 +124,20 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
       cbind(x.b[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=2*p+2*q)),
       cbind(matrix(0,nrow=n.treat.1,ncol=p),diff.x[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=p+2*q)),
       cbind(matrix(0,nrow=n-n.treat.1,ncol=2*p),diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=2*q)),
-      cbind(matrix(0,nrow=n.treat.1,ncol=3*p),diff.y[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=q)),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=3*p+q),diff.y[treat==trt.lvl[2],,drop=FALSE]),
-      cbind(matrix(0,nrow=n.treat.1,ncol=p),diff.x[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=p+2*q)),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=2*p),diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=2*q)),
+      cbind(matrix(0,nrow=n.treat.1,ncol=3*p), diff.y[treat==trt.lvl[1],,drop=FALSE], -1*diff.y[treat==trt.lvl[1],,drop=FALSE]),
+      cbind(matrix(0,nrow=n-n.treat.1,ncol=3*p),diff.y[treat==trt.lvl[2],,drop=FALSE], -1*diff.y[treat==trt.lvl[2],,drop=FALSE]),
+      cbind(matrix(0,nrow=n.treat.1,ncol=p),diff.x[treat==trt.lvl[1],,drop=FALSE],-1*diff.x[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=2*q)),
+      cbind(matrix(0,nrow=n-n.treat.1,ncol=p),diff.x[treat==trt.lvl[2],,drop=FALSE],-1*diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=2*q)),
       cbind(matrix(0,nrow=n.treat.1,ncol=3*p),diff.y[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=q)),
       cbind(matrix(0,nrow=n-n.treat.1,ncol=3*p+q),diff.y[treat==trt.lvl[2],,drop=FALSE])
     )
 
   Right.matrix <-
     rbind(
-      cbind(matrix(0,nrow=n.treat.1,ncol=3*p),diff.y[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=q)),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=3*p+q),diff.y[treat==trt.lvl[2],,drop=FALSE]),
-      cbind(matrix(0,nrow=n.treat.1,ncol=p),diff.x[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=p+2*q)),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=2*p),diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=2*q)),
+      cbind(matrix(0,nrow=n.treat.1,ncol=3*p), diff.y[treat==trt.lvl[1],,drop=FALSE], -1*diff.y[treat==trt.lvl[1],,drop=FALSE]),
+      cbind(matrix(0,nrow=n-n.treat.1,ncol=3*p),diff.y[treat==trt.lvl[2],,drop=FALSE], -1*diff.y[treat==trt.lvl[2],,drop=FALSE]),
+      cbind(matrix(0,nrow=n.treat.1,ncol=p),diff.x[treat==trt.lvl[1],,drop=FALSE],-1*diff.x[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=2*q)),
+      cbind(matrix(0,nrow=n-n.treat.1,ncol=p),diff.x[treat==trt.lvl[2],,drop=FALSE],-1*diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=2*q)),
       cbind(matrix(0,nrow=n.treat.1,ncol=3*p),diff.y[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=q)),
       cbind(matrix(0,nrow=n-n.treat.1,ncol=3*p+q),diff.y[treat==trt.lvl[2],,drop=FALSE]),
       cbind(x.b[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=2*p+2*q)),
