@@ -112,6 +112,11 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   ### Recursive cases:
 
   # Local level CCA using the subset of variables
+  .x.b <- x.b
+  x.b <-scale(x.b, center = T, scale = FALSE)
+
+  x.center <- attr(x.b,"scaled:center")
+
   diff.x <- x.e - x.b
   diff.y <- y.e - y.b
 
@@ -149,23 +154,29 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
     )
 
   # Record the centers
-  x.center <- attr(scale(x.b, center = T, scale = FALSE),"scaled:center")
-  diff.y.0.center <- attr(scale(diff.y[treat==trt.lvl[1],,drop=FALSE],center = T, scale = FALSE),"scaled:center")
-  diff.y.1.center <- attr(scale(diff.y[treat==trt.lvl[2],,drop=FALSE],center = T, scale = FALSE),"scaled:center")
+  # x.center <- attr(scale(x.b, center = T, scale = FALSE),"scaled:center")
+  # diff.y.0.center <- attr(scale(diff.y[treat==trt.lvl[1],,drop=FALSE],center = T, scale = FALSE),"scaled:center")
+  # sdiff.y.1.center <- attr(scale(diff.y[treat==trt.lvl[2],,drop=FALSE],center = T, scale = FALSE),"scaled:center")
 
   # Conduct CCA
-  cancor.res <- CCA::cc(scale(Left.matrix,center =T, scale=F),
-                   scale(Right.matrix,center = T, scale=F))
+  cancor.res <- CCA::cc(Left.matrix, Right.matrix)
 
   # Use the CCA scores
   # In this step we use the first canonical direction
   # Each xceof column is one canonical loading
-  x.loading <- cancor.res$xcoef[1:p,1]
+  x.loading <- cancor.res$xcoef[1:p,]
   # diff.y.0.loading <- cancor.res$xcoef[(3*p+1):(3*p+q),1]
   # diff.y.1.loading <- cancor.res$xcoef[(3*p+q+1):(ncol(Left.matrix)),1]
 
   # Calculate the canonical variates
-  x.proj <- scale(x.b,center=x.center, scale=F)%*%x.loading
+  x.proj <- x.b%*%x.loading
+
+
+  p_vals <- purrr::map_dbl(x.proj %>% data.frame, ~t.test(.~treat)$p.value)
+
+  x.laoding <- cancor.res$xcoef[1:p, which.min(p_vals)]
+  x.proj <- x.proj[,which.min(p_vals)]
+
   #y0.proj <- scale(diff.y, center = diff.y.0.center, scale=F)%*%diff.y.0.loading
   #y1.proj <- scale(diff.y, center = diff.y.1.center, scale= F) %*% diff.y.1.loading
 
