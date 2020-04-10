@@ -133,7 +133,7 @@ build_MOTTE_tree_CO <- function(x.b, x.e.1, x.e.2, y.b, y.e.1, y.e.2,
     rbind(
       cbind(x.b,matrix(0,nrow=n,ncol=2*p+2*q)),
       cbind(x.b,matrix(0,nrow=n,ncol=2*p+2*q)),
-      cbind(matrix(0,nrow=n,ncol=3*p), diff.y.1, matrix(0, nrow=0, ncol=q)),
+      cbind(matrix(0,nrow=n,ncol=3*p), diff.y.1, matrix(0, nrow=n, ncol=q)),
       cbind(matrix(0,nrow=n,ncol=3*p+q), diff.y.2),
       cbind(matrix(0,nrow=n,ncol=3*p), diff.y.1, -1*diff.y.2),
       cbind(matrix(0,nrow=n,ncol=p),diff.x.1, -1*diff.x.2, matrix(0,nrow=n,ncol=2*q)),
@@ -149,7 +149,7 @@ build_MOTTE_tree_CO <- function(x.b, x.e.1, x.e.2, y.b, y.e.1, y.e.2,
       cbind(matrix(0,nrow=n,ncol=2*p),diff.x.2, matrix(0,nrow=n,ncol=2*q)),
       cbind(x.b,matrix(0,nrow=n,ncol=2*p+2*q)),
       cbind(x.b,matrix(0,nrow=n,ncol=2*p+2*q)),
-      cbind(matrix(0,nrow=n,ncol=3*p), diff.y.1, matrix(0, nrow=0, ncol=q)),
+      cbind(matrix(0,nrow=n,ncol=3*p), diff.y.1, matrix(0, nrow=n, ncol=q)),
       cbind(matrix(0,nrow=n,ncol=3*p+q), diff.y.2)
       )
 

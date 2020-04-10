@@ -121,12 +121,12 @@ sim_MOTTE_data_cross_over <- function(
   return(
     list(
       train = list(x.b = X.train.base,
-                  x.e1 = X.train.end.1,
-                  x.e2 = X.train.end.2,
+                  x.e.1 = X.train.end.1,
+                  x.e.2 = X.train.end.2,
                   #trt = Trt.train,
                   y.b = Y.train.base,
-                  y.e1 = Y.train.end.1,
-                  y.e2 = Y.train.end.2),
+                  y.e.1 = Y.train.end.1,
+                  y.e.2 = Y.train.end.2),
       test = list(
         x.b = X.test.base,
         y.e.1 = Y.test.trt1.end,
