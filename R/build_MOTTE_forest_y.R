@@ -100,7 +100,7 @@ build_MOTTE_forest_CO <- function(
   {
     forest <- lapply(1:ntree,FUN = function(x){
       return(build_MOTTE_tree_CO(
-        x.b=x.b, x.e=x.e, treat=treat, y.b=y.b, y.e=y.e,
+        x.b, x.e.1, x.e.2, y.b, y.e.1, y.e.2,
         nodesize=nodesize, nsplits=nsplits, left.out = left.out
       )
       )
@@ -120,7 +120,7 @@ build_MOTTE_forest_CO <- function(
                       .packages = c("CCA","data.tree"))  %dopar%
                       {
                         tree <- build_MOTTE_tree_CO(
-                          x.b=x.b, x.e=x.e, treat=treat, y.b=y.b, y.e=y.e,
+                          x.b, x.e.1, x.e.2, y.b, y.e.1, y.e.2,
                           nodesize=nodesize, nsplits=nsplits, left.out = left.out
                         )
                         print("finished building tree")
