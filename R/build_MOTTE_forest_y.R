@@ -63,17 +63,17 @@ build_MOTTE_forest_CO <- function(
     nsplits <- as.integer(nsplits)
 
   ### Error Prevention Code
-  if(!is.matrix(x.b) || !is.matrix(x.e) || !is.matrix(y.b) || !is.matrix(y.e))
-    stop("Error Message: x.b, x.e, y.b, y.e must be matrices")
+  # if(!is.matrix(x.b) || !is.matrix(x.e) || !is.matrix(y.b) || !is.matrix(y.e))
+  #   stop("Error Message: x.b, x.e, y.b, y.e must be matrices")
 
 # TODO: sort out the data structures in the future
 # if(!is.vector(treat))
 #    stop("Error Message: treat must be a vector")
-
-  if(length(unique(
-    nrow(x.b),nrow(x.e),length(treat),nrow(y.b), nrow(y.b)
-  ))!=1)
-    stop("Error Message: incosistent observation numbers in x.b, x.e, treat, y.b, y.e")
+#
+#   if(length(unique(
+#     nrow(x.b),nrow(x.e),length(treat),nrow(y.b), nrow(y.b)
+#   ))!=1)
+#     stop("Error Message: incosistent observation numbers in x.b, x.e, treat, y.b, y.e")
 
   if(!is.numeric(left.out) || !is.between(left.out,0,0.5))
     stop("Error Message: left.out must be a numeric value between 0 and 0.5")
