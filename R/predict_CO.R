@@ -98,7 +98,7 @@ recommendResult.single <- function(tree.list, x.b){
 #'
 #' @examples
 calcTrtDiff_CO <- function(forest, x.b){
-  apply(x.b, 1, FUN = function(x, forest)
+  tmp <- apply(x.b, 1, FUN = function(x, forest)
     calcTrtDiff.single_CO(forest = forest, x.b=x),
     forest = forest) %>%
     dplyr::bind_rows()
@@ -107,14 +107,16 @@ calcTrtDiff_CO <- function(forest, x.b){
 #' @importFrom magrittr "%>%"
 #' @import dplyr
 calcTrtDiff.single_CO <- function(forest, x.b){
-  res <- traverseForest_CO(forest, x.b) %>%
+  res <- traverseForest_CO(forest, x.b)
     # group_by(TREATMENT) %>%
     # summarize_all(.funs = mean, na.rm=TRUE) %>%
     # #TODO: Improve the treatment naming part for general function use
     # ungroup %>% select(-TREATMENT)
   #TODO: this is Bad
   # res[1,]-res[2,]
-  colMeans(res$Outcome.1-res$Outcome.2)
+  # tmp <- 1
+
+  colMeans(res) %>% t %>% data.frame
 }
 
 #' Traverse Forest
@@ -156,7 +158,7 @@ traverseTree_CO <- function(root, x.b){
   split.value <- root$split.value
 
   if(root$isLeaf)
-    return(data.frame(Outcome.1=root$Outcome.1, Outcome.2=root$Outcome.1))
+    return(data.frame(diff=root$Outcome.1 - root$Outcome.2))
   else{
     # Test cases
     if(length(root$children) > 2)

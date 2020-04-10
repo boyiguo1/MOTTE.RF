@@ -232,8 +232,16 @@ build_MOTTE_tree_CO <- function(x.b, x.e.1, x.e.2, y.b, y.e.1, y.e.2,
   greater.indices <- which(x.proj>=split.value)
   less.indices <- which(x.proj<split.value)
 
-  if(length(greater.indices)<=0) stop("greater indices <=0")
-  if(length(less.indices)<=0) stop("less indices < 0")
+  if(length(greater.indices)<=0||length(less.indices)<=0) {
+    return(
+      data.tree::Node$new(paste("Terminal Node: ", n ," members"),
+                               #xcenter = NULL,
+                               split.comb=NULL, split.value=NULL,
+                               Outcome.1=y.e.1,# Treatment=treat)
+                               Outcome.2 = y.e.2
+    )
+  )
+  }
 
   child.ge <- build_MOTTE_tree_CO(
     x.b = x.b[greater.indices,,drop=FALSE],
