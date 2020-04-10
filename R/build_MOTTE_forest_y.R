@@ -50,10 +50,8 @@
 #'     build_MOTTE_forest(x.b, x.e, treat, y.b, y.e)
 #' #)
 
-build_MOTTE_forest_y <- function(
-  x.b, x.e,
-  treat,
-  y.b, y.e,
+build_MOTTE_forest_CO <- function(
+  x.b, x.e.1, x.e.2, y.b, y.e.1, y.e.2,
   #method = "Exhaust",
   nsplits = NULL,
   nodesize = 2*(ncol(x.b)+1),
@@ -101,7 +99,7 @@ build_MOTTE_forest_y <- function(
   if(nCore==1)
   {
     forest <- lapply(1:ntree,FUN = function(x){
-      return(build_MOTTE_tree_y(
+      return(build_MOTTE_tree_CO(
         x.b=x.b, x.e=x.e, treat=treat, y.b=y.b, y.e=y.e,
         nodesize=nodesize, nsplits=nsplits, left.out = left.out
       )
@@ -116,12 +114,12 @@ build_MOTTE_forest_y <- function(
     ### Construct forest with
     forest <- foreach(i = 1:ntree,
                       .combine = c,
-                      .export=c("build_MOTTE_tree_y","is.between"),
+                      .export=c("build_MOTTE_tree_CO","is.between"),
                       .multicombine = TRUE,
                       .verbose=TRUE,
                       .packages = c("CCA","data.tree"))  %dopar%
                       {
-                        tree <- build_MOTTE_tree_y(
+                        tree <- build_MOTTE_tree_CO(
                           x.b=x.b, x.e=x.e, treat=treat, y.b=y.b, y.e=y.e,
                           nodesize=nodesize, nsplits=nsplits, left.out = left.out
                         )
