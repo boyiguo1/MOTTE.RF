@@ -91,10 +91,10 @@ build_MOTTE_forest_CO <- function(
 
   if(is.null(nsplits))
     cat("Exhaustively searching for split value\n")
-
-  treat <- factor(treat)
-  if(length(levels(treat)) != 2)
-    stop("Error Message: Incorrect number of treatment groups. Must be 2 groups")
+#
+#   treat <- factor(treat)
+#   if(length(levels(treat)) != 2)
+#     stop("Error Message: Incorrect number of treatment groups. Must be 2 groups")
 
   if(nCore==1)
   {
