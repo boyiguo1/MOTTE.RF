@@ -57,11 +57,11 @@ sim_MOTTE_data <- function(
 ){
 
   # TODO: extract this as argument for the parameter
-  # c.x <- sum((1:3)^2)/2
-  # c.y <- sum((1:3)^2)/2
+  c.x <- sum((1:3)^2)/2
+  c.y <- sum((1:3)^2)/2
 
-  c.x <- 0.5
-  c.y <- 0.5
+  # c.x <- 0.5
+  # c.y <- 0.5
   trt.f <- trt.f[[1]]
   link.f <- link.f[[1]]
 
@@ -105,7 +105,7 @@ sim_MOTTE_data <- function(
   ####################################
 
   #X.test.base  <- mvrnorm(n.test,rep(0,p),x.sig)
-  X.test.base  <- MASS::mvrnorm(n.test,rep(0,p),diag(p))
+  X.test.base  <- MASS::mvrnorm(n.test,rep(0,p), cov.mat)
   # With/Without treatment X.end
   X.test.trt1.end <-  X.test.base + .trt.f(X.test.base, 1)
   X.test.trt2.end <-  X.test.base + .trt.f(X.test.base, -1)
