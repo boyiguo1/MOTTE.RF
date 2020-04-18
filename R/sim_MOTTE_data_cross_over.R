@@ -107,7 +107,7 @@ sim_MOTTE_data_cross_over <- function(
   ####################################
 
   #X.test.base  <- mvrnorm(n.test,rep(0,p),x.sig)
-  X.test.base  <- MASS::mvrnorm(n.test,rep(0,p),diag(p))
+  X.test.base  <- MASS::mvrnorm(n.test,rep(0,p), cov.mat)
   # With/Without treatment X.end
   X.test.trt1.end <-  X.test.base + .trt.f(X.test.base, 1)
   X.test.trt2.end <-  X.test.base + .trt.f(X.test.base, -1)
