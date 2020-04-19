@@ -147,12 +147,12 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   # TODO: write a function that extract ccs.
   trt.1.x.loading <- trt.1.cancor.res$xcoef[1:p,1]
   # diff.y.0.loading <- cancor.res$xcoef[(3*p+1):(3*p+q),1]
-  trt.1.y.loading <- trt.1.cancor.res$xcoef[(2*p+1):(ncol(Left.matrix)),1]
+  trt.1.y.loading <- trt.1.cancor.res$xcoef[(2*p+1):(ncol(trt.1.left.matrix)),1]
   # TODO: check if xcoef give the same as ycoef
 
   trt.2.x.loading <- trt.2.cancor.res$xcoef[1:p,1]
   # diff.y.0.loading <- cancor.res$xcoef[(3*p+1):(3*p+q),1]
-  trt.2.y.loading <- trt.2.cancor.res$xcoef[(2*p+1):(ncol(Left.matrix)),1]
+  trt.2.y.loading <- trt.2.cancor.res$xcoef[(2*p+1):(ncol(trt.2.left.matrix)),1]
   # TODO: check if xcoef give the same as ycoef
 
 
