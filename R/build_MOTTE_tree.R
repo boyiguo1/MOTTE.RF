@@ -154,8 +154,9 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   diff.y.1.center <- attr(scale(diff.y[treat==trt.lvl[2],,drop=FALSE],center = T, scale = FALSE),"scaled:center")
 
   # Conduct CCA
-  cancor.res <- CCA::cc(scale(Left.matrix,center =T, scale=F),
-                   scale(Right.matrix,center = T, scale=F))
+  cancor.res <- CCA::cc(Left.matrix, Right.matrix)
+    #scale(Left.matrix,center =T, scale=F),
+     #              scale(Right.matrix,center = T, scale=F))
 
   # Use the CCA scores
   # In this step we use the first canonical direction
@@ -165,7 +166,8 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   # diff.y.1.loading <- cancor.res$xcoef[(3*p+q+1):(ncol(Left.matrix)),1]
 
   # Calculate the canonical variates
-  x.proj <- scale(x.b,center=x.center, scale=F)%*%x.loading
+  #x.proj <- scale(x.b,center=x.center, scale=F)%*%x.loading
+  x.proj <- x.b%*%x.loading
   #y0.proj <- scale(diff.y, center = diff.y.0.center, scale=F)%*%diff.y.0.loading
   #y1.proj <- scale(diff.y, center = diff.y.1.center, scale= F) %*% diff.y.1.loading
 
@@ -231,7 +233,7 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   # Create a new node
   node <-data.tree::Node$new(
     paste("split.value = ", round(split.value, digits=3)),                        # Node name: must be unique to siblings
-    xcenter = x.center,
+    xcenter = rep(0, p), #x.center,
     split.comb=x.loading, split.value=split.value,
     Outcome=NULL, Treatment=NULL
   )
