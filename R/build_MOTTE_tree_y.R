@@ -58,7 +58,9 @@
 #'  #)
 #'
 
-build_MOTTE_tree_CO <- function(x.b, x.e.1, x.e.2, y.b, y.e.1, y.e.2,
+build_MOTTE_tree_CO <- function(x.b, x.diff.1, x.diff.2, #x.e.1, x.e.2,
+                                y.diff.1, y.diff.2,
+                                #y.b, y.e.1, y.e.2,
                         nodesize, nsplits, left.out#) {
                         #, seed = 1
   ) {
@@ -73,7 +75,7 @@ build_MOTTE_tree_CO <- function(x.b, x.e.1, x.e.2, y.b, y.e.1, y.e.2,
   n <- nrow(x.b)
   # n.treat.1 <- sum(treat==trt.lvl[1])
   p <- ncol(x.b)
-  q <- ncol(y.b)
+  q <- ncol(y.diff.1)
 
   ### Base cases:
   # a)
@@ -96,8 +98,8 @@ build_MOTTE_tree_CO <- function(x.b, x.e.1, x.e.2, y.b, y.e.1, y.e.2,
       data.tree::Node$new(paste("Terminal Node: ", n," members"),
                #xcenter = NULL,
                split.comb=NULL, split.value=NULL,
-               Outcome.1=y.e.1,# Treatment=treat)
-               Outcome.2 = y.e.2
+               Outcome.1= y.diff.1, # y.e.1,# Treatment=treat)
+               Outcome.2 = y.diff.2
                )
     )}
 
@@ -112,18 +114,21 @@ build_MOTTE_tree_CO <- function(x.b, x.e.1, x.e.2, y.b, y.e.1, y.e.2,
       data.tree::Node$new(paste("Terminal Node: ", n ," members"),
                #xcenter = NULL,
                split.comb=NULL, split.value=NULL,
-               Outcome.1=y.e.1,# Treatment=treat)
-               Outcome.2 = y.e.2
+               Outcome.1= y.diff.1, # y.e.1,# Treatment=treat)
+               Outcome.2 = y.diff.2
       )
     )}
 
   ### Recursive cases:
 
+  # x.diff.1, x.diff.2, #x.e.1, x.e.2,
+  # y.diff.1, y.diff.2,
+
   # Local level CCA using the subset of variables
-  diff.x.1 <- x.e.1 - x.b
-  diff.x.2 <- x.e.2 - x.b
-  diff.y.1 <- y.e.1 - y.b
-  diff.y.2 <- y.e.2 - y.b
+  diff.x.1 <- x.diff.1
+  diff.x.2 <- x.diff.2
+  diff.y.1 <- y.diff.1
+  diff.y.2 <- y.diff.2
 
   # Create the augmented matrices for both treatment arm
   # Each of the matrix have p(X^b) + p(\Delta X) + q (\Delta Y) columns
@@ -179,8 +184,8 @@ build_MOTTE_tree_CO <- function(x.b, x.e.1, x.e.2, y.b, y.e.1, y.e.2,
       data.tree::Node$new(paste("Terminal Node: ", n," members. No split"),
                           #xcenter = NULL,
                           split.comb=NULL, split.value=NULL,
-                          Outcome.1=y.e.1,# Treatment=treat)
-                          Outcome.2 = y.e.2
+                          Outcome.1=y.diff.1, # y.e.1,# Treatment=treat)
+                          Outcome.2 = y.diff.2# y.e.2
       )
     )
   }
@@ -237,30 +242,38 @@ build_MOTTE_tree_CO <- function(x.b, x.e.1, x.e.2, y.b, y.e.1, y.e.2,
       data.tree::Node$new(paste("Terminal Node: ", n ," members"),
                                #xcenter = NULL,
                                split.comb=NULL, split.value=NULL,
-                               Outcome.1=y.e.1,# Treatment=treat)
-                               Outcome.2 = y.e.2
+                               Outcome.1= y.diff.1, #y.e.1,# Treatment=treat)
+                               Outcome.2 = y.diff.2#y.e.2
     )
   )
   }
 
   child.ge <- build_MOTTE_tree_CO(
     x.b = x.b[greater.indices,,drop=FALSE],
-    x.e.1 = x.e.1[greater.indices,,drop=FALSE],
-    x.e.2 = x.e.2[greater.indices,,drop=FALSE],
-    y.b = y.b[greater.indices,,drop=FALSE],
-    y.e.1 = y.e.1[greater.indices,,drop=FALSE],
-    y.e.2 = y.e.2[greater.indices,,drop=FALSE],
+    x.diff.1 = x.diff.1[greater.indices,,drop=FALSE],
+    x.diff.2 = x.diff.2[greater.indices,,drop=FALSE], #x.e.1, x.e.2,
+    y.diff.1= y.diff.1[greater.indices,,drop=FALSE],
+    y.diff.2 = y.diff.2[greater.indices,,drop=FALSE],
+    # x.e.1 = x.e.1[greater.indices,,drop=FALSE],
+    # x.e.2 = x.e.2[greater.indices,,drop=FALSE],
+    # y.b = y.b[greater.indices,,drop=FALSE],
+    # y.e.1 = y.e.1[greater.indices,,drop=FALSE],
+    # y.e.2 = y.e.2[greater.indices,,drop=FALSE],
     nodesize = nodesize, nsplits = nsplits, left.out = left.out
   )
 
   #
   child.l <- build_MOTTE_tree_CO(
     x.b = x.b[less.indices,,drop=FALSE],
-    x.e.1 = x.e.1[less.indices,,drop=FALSE],
-    x.e.2 = x.e.2[less.indices,,drop=FALSE],
-    y.b = y.b[less.indices,,drop=FALSE],
-    y.e.1 = y.e.1[less.indices,,drop=FALSE],
-    y.e.2 = y.e.2[less.indices,,drop=FALSE],
+    x.diff.1 = x.diff.1[less.indices,,drop=FALSE],
+    x.diff.2 = x.diff.2[less.indices,,drop=FALSE], #x.e.1, x.e.2,
+    y.diff.1= y.diff.1[less.indices,,drop=FALSE],
+    y.diff.2 = y.diff.2[less.indices,,drop=FALSE],
+    # x.e.1 = x.e.1[less.indices,,drop=FALSE],
+    # x.e.2 = x.e.2[less.indices,,drop=FALSE],
+    # y.b = y.b[less.indices,,drop=FALSE],
+    # y.e.1 = y.e.1[less.indices,,drop=FALSE],
+    # y.e.2 = y.e.2[less.indices,,drop=FALSE],
     nodesize = nodesize, nsplits = nsplits, left.out = left.out
   )
   # side == TRUE means greater or equal than

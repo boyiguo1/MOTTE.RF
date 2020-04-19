@@ -51,7 +51,9 @@
 #' #)
 
 build_MOTTE_forest_CO <- function(
-  x.b, x.e.1, x.e.2, y.b, y.e.1, y.e.2,
+  x.b, #x.e.1, x.e.2, y.b, y.e.1, y.e.2,
+  x.diff.1, x.diff.2, #x.e.1, x.e.2,
+  y.diff.1, y.diff.2,
   #method = "Exhaust",
   nsplits = NULL,
   nodesize = 2*(ncol(x.b)+1),
@@ -100,7 +102,8 @@ build_MOTTE_forest_CO <- function(
   {
     forest <- lapply(1:ntree,FUN = function(x){
       return(build_MOTTE_tree_CO(
-        x.b, x.e.1, x.e.2, y.b, y.e.1, y.e.2,
+        x.b, x.diff.1, x.diff.2, #x.e.1, x.e.2,
+        y.diff.1, y.diff.2,# x.e.1, x.e.2, y.b, y.e.1, y.e.2,
         nodesize=nodesize, nsplits=nsplits, left.out = left.out
       )
       )
@@ -120,7 +123,9 @@ build_MOTTE_forest_CO <- function(
                       .packages = c("CCA","data.tree"))  %dopar%
                       {
                         tree <- build_MOTTE_tree_CO(
-                          x.b, x.e.1, x.e.2, y.b, y.e.1, y.e.2,
+                          x.b, #x.e.1, x.e.2, y.b, y.e.1, y.e.2,
+                          x.diff.1, x.diff.2, #x.e.1, x.e.2,
+                          y.diff.1, y.diff.2,
                           nodesize=nodesize, nsplits=nsplits, left.out = left.out
                         )
                         print("finished building tree")
