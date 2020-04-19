@@ -158,7 +158,7 @@ traverseTree <- function(root, x.b){
   split.value <- root$split.value
 
   if(root$isLeaf)
-    return(data.frame(diff=root$Outcome.1 - root$Outcome.2))
+    return(data.frame(diff=colMeans(root$Outcome.1) - colMeans(root$Outcome.2)))
   else{
     # Test cases
     if(length(root$children) > 2)
