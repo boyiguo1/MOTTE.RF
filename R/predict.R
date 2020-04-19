@@ -1,4 +1,4 @@
-#' Recommend treatment based on pre-treatment covariates and a weight
+' Recommend treatment based on pre-treatment covariates and a weight
 #'
 #' @param tree.list MOTTE forest
 #' @param x.b a maitrx, a matrix that contains pre-treatment covarites
@@ -98,7 +98,7 @@ recommendResult.single <- function(tree.list, x.b){
 #'
 #' @examples
 calcTrtDiff <- function(forest, x.b){
-  apply(x.b, 1, FUN = function(x, forest)
+  tmp <- apply(x.b, 1, FUN = function(x, forest)
     calcTrtDiff.single(forest = forest, x.b=x),
     forest = forest) %>%
     dplyr::bind_rows()
@@ -107,13 +107,16 @@ calcTrtDiff <- function(forest, x.b){
 #' @importFrom magrittr "%>%"
 #' @import dplyr
 calcTrtDiff.single <- function(forest, x.b){
-  res <- traverseForest(forest, x.b) %>%
-    group_by(TREATMENT) %>%
-    summarize_all(.funs = mean, na.rm=TRUE) %>%
-    #TODO: Improve the treatment naming part for general function use
-    ungroup %>% select(-TREATMENT)
+  res <- traverseForest(forest, x.b)
+  # group_by(TREATMENT) %>%
+  # summarize_all(.funs = mean, na.rm=TRUE) %>%
+  # #TODO: Improve the treatment naming part for general function use
+  # ungroup %>% select(-TREATMENT)
   #TODO: this is Bad
-  res[1,]-res[2,]
+  # res[1,]-res[2,]
+  # tmp <- 1
+
+  colMeans(res) %>% t %>% data.frame
 }
 
 #' Traverse Forest
@@ -155,7 +158,7 @@ traverseTree <- function(root, x.b){
   split.value <- root$split.value
 
   if(root$isLeaf)
-    return(data.frame(OUTCOME=root$Outcome, TREATMENT=root$Treatment))
+    return(data.frame(diff=root$Outcome.1 - root$Outcome.2))
   else{
     # Test cases
     if(length(root$children) > 2)
@@ -166,7 +169,7 @@ traverseTree <- function(root, x.b){
     ge.node.index <- ifelse(root$children[[1]]$side,1,2)
     l.node.index <- ifelse(root$children[[1]]$side,2,1)
 
-    if((x.b-root$xcenter)%*%split.comb>=split.value)
+    if((x.b)%*%split.comb>=split.value)
       return(traverseTree(root$children[[ge.node.index]],x.b))
     else
       return(traverseTree(root$children[[l.node.index]],x.b))

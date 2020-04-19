@@ -52,14 +52,16 @@ sim_MOTTE_data <- function(
   # TODO: incorporate the linear and polynormial for both treat.f and link.f in the code
   trt.f = c("Linear", "Polynomial", "Box"),
   link.f = c("Linear", "Polynomial"),
-  B1,
-  B2,
+  B ,
   Z
 ){
 
   # TODO: extract this as argument for the parameter
-  c.x <- 0.5 # sum((1:3)^2)/2
-  c.y <- 0.5 # sum((1:3)^2)/2
+  c.x <- sum((1:3)^2)/2
+  c.y <- sum((1:3)^2)/2
+
+  # c.x <- 0.5
+  # c.y <- 0.5
   trt.f <- trt.f[[1]]
   link.f <- link.f[[1]]
 
@@ -69,17 +71,15 @@ sim_MOTTE_data <- function(
                     "Polynomial" = function(x){(x^2)%*%Z},
                     stop("Link function doesn't exist, choose from 'Linear' or 'Polynomial'"))
   .trt.f <- switch(trt.f,
-                   # "Linear" = function(x, trt){sweep(x, 1, trt, "*")%*%B},
-                   "Linear" = function(x, trt){sweep(x, 1, trt, FUN = function(x,y){ifelse(y==1, x%*%B1, (-1*x)%*%B2)})},
-                   "Polynomial" = function(x, trt){sweep(x^2, 1, trt,FUN = function(x,y){ifelse(y==1, x%*%B1, (-1*x)%*%B2)})},
-                   # "Polynomial" = function(x, trt){(sweep(x^2, 1, trt, "*"))%*%B},
+                   "Linear" = function(x, trt){sweep(x, 1, trt, "*")%*%B},
+                   "Polynomial" = function(x, trt){(sweep(x^2, 1, trt, "*"))%*%B},
                    "Box" = function(x, trt){
-                      .x <- x
-                      for (i in 1: nrow(.x)) {
-                        if(abs(x[i,1])<1 & abs(x[i,2])<1) .x[i, 1:3] <- 0
-                        if(abs(x[i,4])<1 & abs(x[i,5])<1) .x[i, 4:6] <- 0
-                        if(abs(x[i,7])<1 & abs(x[i,8])<1) .x[i, 7:9] <- 0
-                      }
+                     .x <- x
+                     for (i in 1: nrow(.x)) {
+                       if(abs(x[i,1])<1 & abs(x[i,2])<1) .x[i, 1:3] <- 0
+                       if(abs(x[i,4])<1 & abs(x[i,5])<1) .x[i, 4:6] <- 0
+                       if(abs(x[i,7])<1 & abs(x[i,8])<1) .x[i, 7:9] <- 0
+                     }
                      sweep(.x, 1, trt, "*") %*% B
                    },
                    stop("Trt.f doesn't exist, choose from 'Linear' or 'Polynomial' or 'Box'")
@@ -89,7 +89,6 @@ sim_MOTTE_data <- function(
   # Simulate the binary treatment assignment for training data
   # Clarification, when trt1, X.e = X.b + X.b%*%B and trt2, X.2 =X.b - X.b%*%B
   Trt.lvls <- c("Trt 1", "Trt 2")
-  #Trt.train <- factor(Trt.lvls[rbinom(n.train, 1, ratio)+1])
   Trt.train <- factor(Trt.lvls[rbinom(n.train, 1, ratio)+1])
 
   # Simulate x.b
@@ -106,7 +105,7 @@ sim_MOTTE_data <- function(
   ####################################
 
   #X.test.base  <- mvrnorm(n.test,rep(0,p),x.sig)
-  X.test.base  <- MASS::mvrnorm(n.test,rep(0,p),diag(p))
+  X.test.base  <- MASS::mvrnorm(n.test,rep(0,p), cov.mat)
   # With/Without treatment X.end
   X.test.trt1.end <-  X.test.base + .trt.f(X.test.base, 1)
   X.test.trt2.end <-  X.test.base + .trt.f(X.test.base, -1)
@@ -120,10 +119,10 @@ sim_MOTTE_data <- function(
   return(
     list(
       train = list(x.b = X.train.base,
-                  x.e = X.train.end,
-                  trt = Trt.train,
-                  y.b = Y.train.base,
-                  y.e = Y.train.end),
+                   x.e = X.train.end,
+                   trt = Trt.train,
+                   y.b = Y.train.base,
+                   y.e = Y.train.end),
       test = list(
         x.b = X.test.base,
         y.e.case = Y.test.trt1.end,
@@ -141,8 +140,9 @@ sim_MOTTE_data <- function(
 #' @export
 #'
 #' @examples
-#' create.B1(10)
-create.B1 <- function(p){
+#' create.B(10)
+
+create.B <- function(p){
   if(p < 9)
     stop("Minimum value for p is 9")
   cbind(
@@ -151,28 +151,17 @@ create.B1 <- function(p){
         rep(0,3), 1:3, rep(0, p-6),
         rep(0,6), 1:3, rep(0, p-9)),
       nrow = p, ncol = 3),
-    matrix(0,nrow = p, ncol = p-3)
-  )
-}
-#' Title
-#' #TODO: improve the documentation
-#' @param p The dimension of the design matrix
-#'
-#' @return A matrix
-#' @export
-#'
-#' @examples
-#' create.B2(10)
-create.B2 <- function(p){
-  if(p < 9)
-    stop("Minimum value for p is 9")
-  cbind(
     matrix(
-      c(c(0,1/2,-1/3), rep(0, p-3),
-        rep(0,3), c(0,1/2,-1/3), rep(0, p-6),
-        rep(0,6), c(0,1/2,-1/3), rep(0, p-9)),
+      c(1:3, rep(0, p-3),
+        rep(0,3), 1:3, rep(0, p-6),
+        rep(0,6), 1:3, rep(0, p-9)),
       nrow = p, ncol = 3),
-    matrix(0,nrow = p, ncol = p-3)
+    matrix(
+      c(1:3, rep(0, p-3),
+        rep(0,3), 1:3, rep(0, p-6),
+        rep(0,6), 1:3, rep(0, p-9)),
+      nrow = p, ncol = 3),
+    matrix(0,nrow = p, ncol = p-9)
   )
 }
 
