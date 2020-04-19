@@ -74,12 +74,12 @@ sim_MOTTE_data_cross_over <- function(
                    "Linear" = function(x, trt){sweep(x, 1, trt, "*")%*%B},
                    "Polynomial" = function(x, trt){(sweep(x^2, 1, trt, "*"))%*%B},
                    "Box" = function(x, trt){
-                      .x <- x
-                      for (i in 1: nrow(.x)) {
-                        if(abs(x[i,1])<1 & abs(x[i,2])<1) .x[i, 1:3] <- 0
-                        if(abs(x[i,4])<1 & abs(x[i,5])<1) .x[i, 4:6] <- 0
-                        if(abs(x[i,7])<1 & abs(x[i,8])<1) .x[i, 7:9] <- 0
-                      }
+                     .x <- x
+                     for (i in 1: nrow(.x)) {
+                       if(abs(x[i,1])<1 & abs(x[i,2])<1) .x[i, 1:3] <- 0
+                       if(abs(x[i,4])<1 & abs(x[i,5])<1) .x[i, 4:6] <- 0
+                       if(abs(x[i,7])<1 & abs(x[i,8])<1) .x[i, 7:9] <- 0
+                     }
                      sweep(.x, 1, trt, "*") %*% B
                    },
                    stop("Trt.f doesn't exist, choose from 'Linear' or 'Polynomial' or 'Box'")
@@ -92,12 +92,14 @@ sim_MOTTE_data_cross_over <- function(
   Trt.train <- factor(Trt.lvls[rbinom(n.train, 1, ratio)+1])
 
   # Simulate x.b
-  X.train.base <- MASS::mvrnorm(n.train,rep(0,p), cov.mat)
-  X.train.end.1 <- X.train.base + .trt.f(X.train.base, 1)+ mvrnorm(n.train, rep(0,p), c.x*diag(p))
-  X.train.end.2 <- X.train.base + .trt.f(X.train.base, -1)+ mvrnorm(n.train, rep(0,p), c.x*diag(p))
+  X.train.base.1 <- MASS::mvrnorm(n.train,rep(0,p), cov.mat)
+  X.train.base.2 <- X.train.base.1 + MASS::mvrnorm(n.train,rep(0,p), 0.1*diag(p))
+  X.train.end.1 <- X.train.base.1 + .trt.f(X.train.base.1, 1)+ mvrnorm(n.train, rep(0,p), c.x*diag(p))
+  X.train.end.2 <- X.train.base.2 + .trt.f(X.train.base.2, -1)+ mvrnorm(n.train, rep(0,p), c.x*diag(p))
   # X.train.end <- X.train.base + .trt.f(X.train.base, ifelse(Trt.train=="Trt 1", 1, -1)) + mvrnorm(n.train, rep(0,p), c.x*diag(p))
 
-  Y.train.base <- .link.f(X.train.base) + mvrnorm(n.train, rep(0,q), c.y*diag(q))
+  Y.train.base.1 <- .link.f(X.train.base.1) + mvrnorm(n.train, rep(0,q), c.y*diag(q))
+  Y.train.base.2 <- .link.f(X.train.base.2) + mvrnorm(n.train, rep(0,q), c.y*diag(q))
   Y.train.end.1 <- .link.f(X.train.end.1) + mvrnorm(n.train, rep(0,q), c.y*diag(q))
   Y.train.end.2 <- .link.f(X.train.end.2) + mvrnorm(n.train, rep(0,q), c.y*diag(q))
 
@@ -107,10 +109,11 @@ sim_MOTTE_data_cross_over <- function(
   ####################################
 
   #X.test.base  <- mvrnorm(n.test,rep(0,p),x.sig)
-  X.test.base  <- MASS::mvrnorm(n.test,rep(0,p), cov.mat)
+  X.test.base.1  <- MASS::mvrnorm(n.test,rep(0,p), cov.mat)
+  X.test.base.2  <- X.test.base.1 + MASS::mvrnorm(n.test,rep(0,p), 0.1*diag(p))
   # With/Without treatment X.end
-  X.test.trt1.end <-  X.test.base + .trt.f(X.test.base, 1)
-  X.test.trt2.end <-  X.test.base + .trt.f(X.test.base, -1)
+  X.test.trt1.end <-  X.test.base.1 + .trt.f(X.test.base.1, 1)
+  X.test.trt2.end <-  X.test.base.2 + .trt.f(X.test.base.2, -1)
 
 
   # With/Without treatment Y.base
@@ -120,15 +123,18 @@ sim_MOTTE_data_cross_over <- function(
   # TODO: add return list
   return(
     list(
-      train = list(x.b = X.train.base,
-                  x.e.1 = X.train.end.1,
-                  x.e.2 = X.train.end.2,
-                  #trt = Trt.train,
-                  y.b = Y.train.base,
-                  y.e.1 = Y.train.end.1,
-                  y.e.2 = Y.train.end.2),
+      train = list(x.b.1 = X.train.base.1,
+                   x.b.2 = X.train.base.2,
+                   x.e.1 = X.train.end.1,
+                   x.e.2 = X.train.end.2,
+                   #trt = Trt.train,
+                   y.b.1 = Y.train.base.1,
+                   y.b.2 = Y.train.base.2,
+                   y.e.1 = Y.train.end.1,
+                   y.e.2 = Y.train.end.2),
       test = list(
-        x.b = X.test.base,
+        x.b.1 = X.test.base.1,
+        x.b.2 = X.test.base.2,
         y.e.1 = Y.test.trt1.end,
         y.e.2 = Y.test.trt2.end
       )
@@ -174,7 +180,7 @@ create.Z <- function(p, q){
       rep(0,3), 1:3, rep(0, p-6),
       rep(0,6), 1:3, rep(0, p-9),
       rep(0, p*(q-3))
-      ),
+    ),
     nrow = p, ncol = q
   )
 }
