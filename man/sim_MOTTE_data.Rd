@@ -13,8 +13,7 @@ sim_MOTTE_data(
   cov.mat = diag(p),
   trt.f = c("Linear", "Polynomial", "Box"),
   link.f = c("Linear", "Polynomial"),
-  B1,
-  B2,
+  B,
   Z
 )
 }
@@ -35,9 +34,9 @@ sim_MOTTE_data(
 
 \item{link.f}{character, the name of treatment effect funciton}
 
-\item{Z}{matrix, the coefficient matrix used in the link.f}
-
 \item{B}{matrix, the coefficient matrix used in the trt.f}
+
+\item{Z}{matrix, the coefficient matrix used in the link.f}
 }
 \value{
 A nested list that contain training data and testing data. TODO: add more introdcution to whats in the list
