@@ -160,7 +160,17 @@ create.B <- function(p){
         rep(0,3), 1:3, rep(0, p-6),
         rep(0,6), 1:3, rep(0, p-9)),
       nrow = p, ncol = 3),
-    matrix(0,nrow = p, ncol = p-3)
+    matrix(
+      c(1:3, rep(0, p-3),
+        rep(0,3), 1:3, rep(0, p-6),
+        rep(0,6), 1:3, rep(0, p-9)),
+      nrow = p, ncol = 3),
+    matrix(
+      c(1:3, rep(0, p-3),
+        rep(0,3), 1:3, rep(0, p-6),
+        rep(0,6), 1:3, rep(0, p-9)),
+      nrow = p, ncol = 3),
+    matrix(0,nrow = p, ncol = p-9)
   )
 }
 
