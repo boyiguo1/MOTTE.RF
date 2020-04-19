@@ -125,8 +125,8 @@ sim_MOTTE_data <- function(
                    y.e = Y.train.end),
       test = list(
         x.b = X.test.base,
-        y.e.case = Y.test.trt1.end,
-        y.e.control = Y.test.trt2.end
+        y.e.1 = Y.test.trt1.end,
+        y.e.2 = Y.test.trt2.end
       )
     )
   )

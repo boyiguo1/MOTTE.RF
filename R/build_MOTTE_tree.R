@@ -69,7 +69,8 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
       data.tree::Node$new(
         paste("Terminal Node: ", n ," members", "Unique"),
         xcenter = NULL, split.comb=NULL, split.value=NULL,
-        Outcome=y.e, Treatment=treat)
+        Outcome.1=y.e[treat==trt.lvl[1],,drop=F],
+        Outcome.2=y.e[treat==trt.lvl[2],,drop=F])
     )}
 
   ### Base cases:
@@ -79,7 +80,8 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
     return(
       data.tree::Node$new(paste("Terminal Node: ", n," members"),
                           xcenter = NULL, split.comb=NULL, split.value=NULL,
-                          Outcome=y.e, Treatment=treat)
+                          Outcome.1=y.e[treat==trt.lvl[1],,drop=F],
+                          Outcome.2=y.e[treat==trt.lvl[2],,drop=F])
     )}
 
   ### Base cases:
@@ -91,7 +93,8 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
     return(
       data.tree::Node$new(paste("Terminal Node: ", n ," members"),
                           xcenter = NULL, split.comb=NULL, split.value=NULL,
-                          Outcome=y.e, Treatment=treat)
+                          Outcome.1=y.e[treat==trt.lvl[1],,drop=F],
+                          Outcome.2=y.e[treat==trt.lvl[2],,drop=F])
     )}
 
   ### Recursive cases:
@@ -181,7 +184,8 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
     return(
       data.tree::Node$new(paste("Terminal Node: ", n," members. No split"),
                           xcenter = NULL, split.comb=NULL, split.value=NULL,
-                          Outcome=y.e, Treatment=treat)
+                          Outcome.1=y.e[treat==trt.lvl[1],,drop=F],
+                          Outcome.2=y.e[treat==trt.lvl[2],,drop=F])
     )
   }
 
@@ -226,7 +230,9 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
     paste("split.value = ", round(split.value, digits=3)),                        # Node name: must be unique to siblings
     xcenter =rep(0, p), #x.center,
     split.comb=x.loading, split.value=split.value,
-    Outcome=NULL, Treatment=NULL
+    # Outcome=NULL, Treatment=NULL
+    Outcome.1=NULL,
+    Outcome.2=NULL
   )
 
   greater.indices <- which(x.proj>=split.value)
