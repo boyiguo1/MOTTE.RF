@@ -6,11 +6,10 @@
 \usage{
 build_MOTTE_tree_CO(
   x.b,
-  x.e.1,
-  x.e.2,
-  y.b,
-  y.e.1,
-  y.e.2,
+  x.diff.1,
+  x.diff.2,
+  y.diff.1,
+  y.diff.2,
   nodesize,
   nsplits,
   left.out
@@ -18,8 +17,6 @@ build_MOTTE_tree_CO(
 }
 \arguments{
 \item{x.b}{Pre-treatment covariates, i.e. microbiomes}
-
-\item{y.b}{Pre-treatment response, i.e. biomarkers}
 
 \item{nodesize}{An integer value. The threshold that control the maximum size of a node}
 
@@ -30,6 +27,8 @@ build_MOTTE_tree_CO(
 \item{x.e}{Post-treatment covariates, i.e. microbiomes}
 
 \item{treat}{A vector of binary value, the arm of treatment}
+
+\item{y.b}{Pre-treatment response, i.e. biomarkers}
 
 \item{y.e}{Post-treatment response, i.e. biomarkers}
 

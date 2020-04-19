@@ -6,11 +6,10 @@
 \usage{
 build_MOTTE_forest_CO(
   x.b,
-  x.e.1,
-  x.e.2,
-  y.b,
-  y.e.1,
-  y.e.2,
+  x.diff.1,
+  x.diff.2,
+  y.diff.1,
+  y.diff.2,
   nsplits = NULL,
   nodesize = 2 * (ncol(x.b) + 1),
   left.out = 0.1,
@@ -20,8 +19,6 @@ build_MOTTE_forest_CO(
 }
 \arguments{
 \item{x.b}{Before treatment covariates, a n by p matrix}
-
-\item{y.b}{Before treatment outcomes, a n by q matrix}
 
 \item{nsplits}{The number of split condidate want to examine when constructing split rule}
 
@@ -36,6 +33,8 @@ build_MOTTE_forest_CO(
 \item{x.e}{After treatment covariates, a n by p matrix}
 
 \item{treat}{Treatment received, a n by 1 vector}
+
+\item{y.b}{Before treatment outcomes, a n by q matrix}
 
 \item{y.e}{After treatment outcomes, a n by q matrix
 #@param method Method to use when choosing split value. Two options: "Exhaust" and "Random"}
