@@ -71,8 +71,8 @@ sim_MOTTE_data <- function(
                     "Polynomial" = function(x){(x^2)%*%Z},
                     stop("Link function doesn't exist, choose from 'Linear' or 'Polynomial'"))
   .trt.f <- switch(trt.f,
-                   "Linear" = function(x, trt){sweep(x, 1, trt, "*")%*%B},
-                   "Polynomial" = function(x, trt){(sweep(x^2, 1, trt, "*"))%*%B},
+                   "Linear" = function(x, trt){sweep(cbind(1,x), 1, trt, "*")%*%B},
+                   "Polynomial" = function(x, trt){(sweep(cbind(1,x^2), 1, trt, "*"))%*%B},
                    "Box" = function(x, trt){
                      .x <- x
                      for (i in 1: nrow(.x)) {
@@ -80,11 +80,10 @@ sim_MOTTE_data <- function(
                        if(abs(x[i,4])<1 & abs(x[i,5])<1) .x[i, 4:6] <- 0
                        if(abs(x[i,7])<1 & abs(x[i,8])<1) .x[i, 7:9] <- 0
                      }
-                     sweep(.x, 1, trt, "*") %*% B
+                     sweep(cbind(1,.x), 1, trt, "*") %*% B
                    },
                    stop("Trt.f doesn't exist, choose from 'Linear' or 'Polynomial' or 'Box'")
   )
-
 
   # Simulate the binary treatment assignment for training data
   # Clarification, when trt1, X.e = X.b + X.b%*%B and trt2, X.2 =X.b - X.b%*%B
@@ -145,7 +144,7 @@ sim_MOTTE_data <- function(
 create.B <- function(p){
   if(p < 9)
     stop("Minimum value for p is 9")
-  cbind(
+  cbind( 1,
     matrix(
       c(1:3, rep(0, p-3),
         rep(0,3), 1:3, rep(0, p-6),
