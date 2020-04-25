@@ -74,12 +74,12 @@ sim_MOTTE_data <- function(
                    "Linear" = function(x, trt){sweep(x, 1, trt, "*")%*%B},
                    "Polynomial" = function(x, trt){(sweep(x^2, 1, trt, "*"))%*%B},
                    "Box" = function(x, trt){
-                      .x <- x
-                      for (i in 1: nrow(.x)) {
-                        if(abs(x[i,1])<1 & abs(x[i,2])<1) .x[i, 1:3] <- 0
-                        if(abs(x[i,4])<1 & abs(x[i,5])<1) .x[i, 4:6] <- 0
-                        if(abs(x[i,7])<1 & abs(x[i,8])<1) .x[i, 7:9] <- 0
-                      }
+                     .x <- x
+                     for (i in 1: nrow(.x)) {
+                       if(abs(x[i,1])<1 & abs(x[i,2])<1) .x[i, 1:3] <- 0
+                       if(abs(x[i,4])<1 & abs(x[i,5])<1) .x[i, 4:6] <- 0
+                       if(abs(x[i,7])<1 & abs(x[i,8])<1) .x[i, 7:9] <- 0
+                     }
                      sweep(.x, 1, trt, "*") %*% B
                    },
                    stop("Trt.f doesn't exist, choose from 'Linear' or 'Polynomial' or 'Box'")
@@ -119,14 +119,14 @@ sim_MOTTE_data <- function(
   return(
     list(
       train = list(x.b = X.train.base,
-                  x.e = X.train.end,
-                  trt = Trt.train,
-                  y.b = Y.train.base,
-                  y.e = Y.train.end),
+                   x.e = X.train.end,
+                   trt = Trt.train,
+                   y.b = Y.train.base,
+                   y.e = Y.train.end),
       test = list(
         x.b = X.test.base,
-        y.e.case = Y.test.trt1.end,
-        y.e.control = Y.test.trt2.end
+        y.e.1 = Y.test.trt1.end,
+        y.e.2 = Y.test.trt2.end
       )
     )
   )
@@ -141,6 +141,7 @@ sim_MOTTE_data <- function(
 #'
 #' @examples
 #' create.B(10)
+
 create.B <- function(p){
   if(p < 9)
     stop("Minimum value for p is 9")
@@ -150,7 +151,17 @@ create.B <- function(p){
         rep(0,3), 1:3, rep(0, p-6),
         rep(0,6), 1:3, rep(0, p-9)),
       nrow = p, ncol = 3),
-    matrix(0,nrow = p, ncol = p-3)
+    matrix(
+      c(1:3, rep(0, p-3),
+        rep(0,3), 1:3, rep(0, p-6),
+        rep(0,6), 1:3, rep(0, p-9)),
+      nrow = p, ncol = 3),
+    matrix(
+      c(1:3, rep(0, p-3),
+        rep(0,3), 1:3, rep(0, p-6),
+        rep(0,6), 1:3, rep(0, p-9)),
+      nrow = p, ncol = 3),
+    matrix(0,nrow = p, ncol = p-9)
   )
 }
 
