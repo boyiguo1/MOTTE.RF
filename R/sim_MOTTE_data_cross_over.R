@@ -186,9 +186,9 @@ create.B <- function(p){
 #' create.Z(10,3)
 create.Z <- function(p, q){
   matrix(
-    c(1:3, rep(0, p-3),
-      rep(0,3), 1:3, rep(0, p-6),
-      rep(0,6), 1:3, rep(0, p-9),
+    c((1:3)/3, rep(0, p-3),
+      rep(0,3), (1:3)/3, rep(0, p-6),
+      rep(0,6), (1:3)/3, rep(0, p-9),
       rep(0, p*(q-3))
     ),
     nrow = p, ncol = q
