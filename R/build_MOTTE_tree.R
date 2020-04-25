@@ -36,8 +36,12 @@
 # TODO: add description to setting reference trt.lvl. as R convention, the first level from levels function are use as the refence group
 #       i.e. treatment 0/ treatment control
 #' @examples
+#' set.seed(1)
+#' B <- create.B(10)
+#' Z <- create.Z(10, 3)
 #' tmp.dat <- sim_MOTTE_data( n.train = 500, n.test = 200,
-#' p = 10, q = 3, pi = 0.5)
+#' p = 10, q = 3, ratio = 0.5,
+#' B = B, Z = Z)
 #'
 #' train.dat <- tmp.dat$train
 #'
@@ -140,31 +144,16 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
       cbind(matrix(0,nrow=n-n.treat.1,ncol=2*p),diff.y[treat==trt.lvl[2],,drop=FALSE])
     )
 
-<<<<<<< HEAD
-  # Record the centers
-  # x.center <- attr(scale(x.b, center = T, scale = FALSE),"scaled:center")
-  # diff.y.0.center <- attr(scale(diff.y[treat==trt.lvl[1],,drop=FALSE],center = T, scale = FALSE),"scaled:center")
-  # sdiff.y.1.center <- attr(scale(diff.y[treat==trt.lvl[2],,drop=FALSE],center = T, scale = FALSE),"scaled:center")
 
-  # Conduct CCA
-  cancor.res <- CCA::cc(Left.matrix, Right.matrix)
-=======
   # Conduct CCA
   trt.1.cancor.res <- CCA::cc(rbind(trt.1.left.matrix, trt.1.right.matrix),
                               rbind(trt.1.right.matrix, trt.1.left.matrix))
   trt.2.cancor.res <- CCA::cc(rbind(trt.2.left.matrix, trt.2.right.matrix),
                               rbind(trt.2.right.matrix, trt.2.left.matrix))
->>>>>>> CCA_TrtEffct
 
-  # Use the CCA scores
-  # In this step we use the first canonical direction
-  # Each xceof column is one canonical loading
-<<<<<<< HEAD
-  x.loading <- cancor.res$xcoef[1:p,]
-=======
+
   # TODO: write a function that extract ccs.
   trt.1.x.loading <- trt.1.cancor.res$xcoef[1:p,1]
->>>>>>> CCA_TrtEffct
   # diff.y.0.loading <- cancor.res$xcoef[(3*p+1):(3*p+q),1]
   trt.1.y.loading <- trt.1.cancor.res$xcoef[(2*p+1):(ncol(trt.1.left.matrix)),1]
   # TODO: check if xcoef give the same as ycoef
@@ -176,27 +165,15 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
 
 
   # Calculate the canonical variates
-<<<<<<< HEAD
-  x.proj <- x.b%*%x.loading
 
 
-  p_vals <- purrr::map_dbl(x.proj %>% data.frame, ~t.test(.~treat)$p.value)
-
-  x.laoding <- cancor.res$xcoef[1:p, which.min(p_vals)]
-  x.proj <- x.proj[,which.min(p_vals)]
-
-  #y0.proj <- scale(diff.y, center = diff.y.0.center, scale=F)%*%diff.y.0.loading
-  #y1.proj <- scale(diff.y, center = diff.y.1.center, scale= F) %*% diff.y.1.loading
-=======
   # x.proj <- scale(x.b,center=x.center, scale=F)%*%x.loading
   # y0.proj <- scale(diff.y, center = diff.y.0.center, scale=F)%*%diff.y.0.loading
   # y1.proj <- scale(diff.y, center = diff.y.1.center, scale= F) %*% diff.y.1.loading
 
   x.loading <- (trt.2.x.loading - trt.1.x.loading)
   x.proj <- x.b %*% x.loading
-  # y.proj <- diff.y %*% (trt.2.x.loading - trt.1.x.loading)
 
->>>>>>> CCA_TrtEffct
 
   # Generate a vector consists of split value candidates
   #split.value.cand <- unique(x.proj)
@@ -303,10 +280,3 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   node$AddChildNode(child.l)
   return(node)
 }
-
-
-#TODO: add a recursive function, which contains standardization of the data.
-# Record the centers
-# x.center <- attr(scale(x.b, center = T, scale = FALSE),"scaled:center")
-# diff.y.0.center <- attr(scale(diff.y[treat==trt.lvl[1],,drop=FALSE],center = T, scale = FALSE),"scaled:center")
-# diff.y.1.center <- attr(scale(diff.y[treat==trt.lvl[2],,drop=FALSE],center = T, scale = FALSE),"scaled:center")
