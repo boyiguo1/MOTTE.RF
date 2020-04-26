@@ -141,10 +141,10 @@ sim_MOTTE_data <- function(
 #' @examples
 #' create.B(10)
 
-create.B <- function(p){
+create.B <- function(p, intercept=T){
   if(p < 9)
     stop("Minimum value for p is 9")
-  cbind( 1,
+  cbind( ifelse(intercept, 1, 0),
     matrix(
       c(1:3, rep(0, p-3),
         rep(0,3), 1:3, rep(0, p-6),
