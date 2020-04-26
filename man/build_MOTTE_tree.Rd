@@ -30,8 +30,12 @@ A data.tree object, node
 Fitting MOTTE Tree in the MOTTE.RF
 }
 \examples{
+set.seed(1)
+B <- create.B(10)
+Z <- create.Z(10, 3)
 tmp.dat <- sim_MOTTE_data( n.train = 500, n.test = 200,
-p = 10, q = 3, pi = 0.5)
+p = 10, q = 3, ratio = 0.5,
+B = B, Z = Z)
 
 train.dat <- tmp.dat$train
 

@@ -151,7 +151,7 @@ sim_MOTTE_data_cross_over <- function(
 #'
 #' @examples
 #' create.B(10)
-create.B <- function(p){
+create.B_CO <- function(p){
   if(p < 9)
     stop("Minimum value for p is 9")
   cbind(
@@ -184,7 +184,7 @@ create.B <- function(p){
 #'
 #' @examples
 #' create.Z(10,3)
-create.Z <- function(p, q){
+create.Z_CO <- function(p, q){
   matrix(
     c((1:3)/3, rep(0, p-3),
       rep(0,3), (1:3)/3, rep(0, p-6),
