@@ -169,7 +169,7 @@ traverseTree <- function(root, x.b){
     ge.node.index <- ifelse(root$children[[1]]$side,1,2)
     l.node.index <- ifelse(root$children[[1]]$side,2,1)
 
-    if((x.b)%*%split.comb>=split.value)
+    if((x.b-xcenter)%*%split.comb>=split.value)
       return(traverseTree(root$children[[ge.node.index]],x.b))
     else
       return(traverseTree(root$children[[l.node.index]],x.b))

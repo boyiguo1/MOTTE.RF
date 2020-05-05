@@ -50,6 +50,14 @@
 #'                      nodesize=30, nsplits=NULL, left.out = 0.1)
 #'  )
 #'
+#'  train.dat <- tmp.dat$train
+#'
+#'    x.b <- train.dat$x.b
+#'    x.e <- train.dat$x.e
+#'    treat <- train.dat$trt
+#'    y.b <- train.dat$y.b
+#'    y.e <- train.dat$y.e
+#'
 
 build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
                              nodesize, nsplits, left.out) {
@@ -104,65 +112,103 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   ### Recursive cases:
 
   # Local level CCA using the subset of variables
-  .x.b <- x.b
-  x.b <-scale(x.b, center = T, scale = FALSE)
 
-  x.center <- attr(x.b,"scaled:center")
+  .x.b <- scale(x.b, scale=F)
 
-  diff.x <- x.e - x.b
-  diff.y <- y.e - y.b
+  x.b.1 <- .x.b[treat==trt.lvl[1],,drop=F]
+  x.b.2 <- .x.b[treat!=trt.lvl[1],,drop=F]
+  x.e.1 <- x.e[treat==trt.lvl[1],,drop=F] %>% scale(scale=F)
+  x.e.2 <- x.e[treat!=trt.lvl[1],,drop=F] %>% scale(scale=F)
+  # y.b.1 <-
+  # y.b.2 <-
+  y.e.1 <- y.e[treat==trt.lvl[1],,drop=F] %>% scale(scale=F)
+  y.e.2 <- y.e[treat!=trt.lvl[1],,drop=F] %>% scale(scale=F)
+
+#
+#
+#   diff.x <- x.e - x.b
+#   diff.y <- y.e - y.b
 
   # Create the augmented matrices for both treatment arm
   # Each of the matrix have p(X^b) + p(\Delta X) + q (\Delta Y) columns
   # Trtment lvl 1
 
-  trt.1.left.matrix <-
+  # trt.1.left.matrix <-
+  #   rbind(
+  #     cbind(x.b[treat==trt.lvl[1],,drop=FALSE],matrix(0, nrow=n.treat.1, ncol=p+q)),
+  #     cbind(matrix(0,nrow=n.treat.1,ncol=2*p),diff.y[treat==trt.lvl[1],,drop=FALSE]),
+  #     cbind(x.b[treat==trt.lvl[1],,drop=FALSE],matrix(0, nrow=n.treat.1, ncol=p+q))
+  #   )
+  # trt.1.right.matrix <-
+  #   rbind(
+  #     cbind(matrix(0,nrow=n.treat.1,ncol=p),diff.x[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=q)),
+  #     cbind(matrix(0,nrow=n.treat.1,ncol=p),diff.x[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=q)),
+  #     cbind(matrix(0,nrow=n.treat.1,ncol=2*p),diff.y[treat==trt.lvl[1],,drop=FALSE])
+  #   )
+  #
+  # # Trtment lvl 2
+  #
+  # trt.2.left.matrix <-
+  #   rbind(
+  #     cbind(x.b[treat==trt.lvl[2],,drop=FALSE],matrix(0, nrow=n-n.treat.1, ncol=p+q)),
+  #     cbind(matrix(0,nrow=n-n.treat.1,ncol=2*p),diff.y[treat==trt.lvl[2],,drop=FALSE]),
+  #     cbind(x.b[treat==trt.lvl[2],,drop=FALSE],matrix(0, nrow=n-n.treat.1, ncol=p+q))
+  #   )
+  # trt.2.right.matrix <-
+  #   rbind(
+  #     cbind(matrix(0,nrow=n-n.treat.1,ncol=p),diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=q)),
+  #     cbind(matrix(0,nrow=n-n.treat.1,ncol=p),diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=q)),
+  #     cbind(matrix(0,nrow=n-n.treat.1,ncol=2*p),diff.y[treat==trt.lvl[2],,drop=FALSE])
+  #   )
+
+
+  Left.matrix <-
     rbind(
-      cbind(x.b[treat==trt.lvl[1],,drop=FALSE],matrix(0, nrow=n.treat.1, ncol=p+q)),
-      cbind(matrix(0,nrow=n.treat.1,ncol=2*p),diff.y[treat==trt.lvl[1],,drop=FALSE]),
-      cbind(x.b[treat==trt.lvl[1],,drop=FALSE],matrix(0, nrow=n.treat.1, ncol=p+q))
+      cbind(x.b.1,matrix(0,nrow=n.treat.1,ncol=p+q)),
+      cbind(x.b.2,matrix(0,nrow=n-n.treat.1,ncol=p+q)),
+      cbind(x.b.1,matrix(0,nrow=n.treat.1,ncol=p+q)),
+      cbind(x.b.2,matrix(0,nrow=n-n.treat.1,ncol=p+q))#,
+      # cbind(matrix(0,nrow=n.treat.1,ncol=p),diff.x[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=q)),
+      # cbind(matrix(0,nrow=n-n.treat.1,ncol=p),diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=q))
     )
-  trt.1.right.matrix <-
+
+  Right.matrix <-
     rbind(
-      cbind(matrix(0,nrow=n.treat.1,ncol=p),diff.x[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=q)),
-      cbind(matrix(0,nrow=n.treat.1,ncol=p),diff.x[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=q)),
-      cbind(matrix(0,nrow=n.treat.1,ncol=2*p),diff.y[treat==trt.lvl[1],,drop=FALSE])
-    )
-
-  # Trtment lvl 2
-
-  trt.2.left.matrix <-
-    rbind(
-      cbind(x.b[treat==trt.lvl[2],,drop=FALSE],matrix(0, nrow=n-n.treat.1, ncol=p+q)),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=2*p),diff.y[treat==trt.lvl[2],,drop=FALSE]),
-      cbind(x.b[treat==trt.lvl[2],,drop=FALSE],matrix(0, nrow=n-n.treat.1, ncol=p+q))
-    )
-  trt.2.right.matrix <-
-    rbind(
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=p),diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=q)),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=p),diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=q)),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=2*p),diff.y[treat==trt.lvl[2],,drop=FALSE])
+      cbind(matrix(0,nrow=n.treat.1,ncol=2*p),y.e.1),
+      cbind(matrix(0,nrow=n-n.treat.1,ncol=2*p),-1*y.e.2),
+      cbind(matrix(0,nrow=n.treat.1,ncol=p),x.e.1,matrix(0,nrow=n.treat.1,ncol=q)),
+      cbind(matrix(0,nrow=n-n.treat.1,ncol=p),-1*x.e.2,matrix(0,nrow=n-n.treat.1,ncol=q))#,
+      # cbind(matrix(0,nrow=n.treat.1,ncol=3*p),diff.y[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=q))
+      # cbind(matrix(0,nrow=n-n.treat.1,ncol=3*p+q),diff.y[treat==trt.lvl[2],,drop=FALSE])
     )
 
 
-  # Conduct CCA
-  trt.1.cancor.res <- CCA::cc(rbind(trt.1.left.matrix, trt.1.right.matrix),
-                              rbind(trt.1.right.matrix, trt.1.left.matrix))
-  trt.2.cancor.res <- CCA::cc(rbind(trt.2.left.matrix, trt.2.right.matrix),
-                              rbind(trt.2.right.matrix, trt.2.left.matrix))
+  # # Conduct CCA
+  # trt.1.cancor.res <- CCA::cc(rbind(trt.1.left.matrix, trt.1.right.matrix),
+  #                             rbind(trt.1.right.matrix, trt.1.left.matrix))
+  # trt.2.cancor.res <- CCA::cc(rbind(trt.2.left.matrix, trt.2.right.matrix),
+  #                             rbind(trt.2.right.matrix, trt.2.left.matrix))
+  #
+  #
+  # # TODO: write a function that extract ccs.
+  # trt.1.x.loading <- trt.1.cancor.res$xcoef[1:p,1]
+  # # diff.y.0.loading <- cancor.res$xcoef[(3*p+1):(3*p+q),1]
+  # trt.1.y.loading <- trt.1.cancor.res$xcoef[(2*p+1):(ncol(trt.1.left.matrix)),1]
+  # # TODO: check if xcoef give the same as ycoef
+  #
+  # trt.2.x.loading <- trt.2.cancor.res$xcoef[1:p,1]
+  # # diff.y.0.loading <- cancor.res$xcoef[(3*p+1):(3*p+q),1]
+  # trt.2.y.loading <- trt.2.cancor.res$xcoef[(2*p+1):(ncol(trt.2.left.matrix)),1]
+  # # TODO: check if xcoef give the same as ycoef
 
 
-  # TODO: write a function that extract ccs.
-  trt.1.x.loading <- trt.1.cancor.res$xcoef[1:p,1]
-  # diff.y.0.loading <- cancor.res$xcoef[(3*p+1):(3*p+q),1]
-  trt.1.y.loading <- trt.1.cancor.res$xcoef[(2*p+1):(ncol(trt.1.left.matrix)),1]
-  # TODO: check if xcoef give the same as ycoef
+  # cca.res <- CCA::cc(rbind(Left.matrix, Right.matrix),
+  #                    rbind(Right.matrix, Left.matrix))
 
-  trt.2.x.loading <- trt.2.cancor.res$xcoef[1:p,1]
-  # diff.y.0.loading <- cancor.res$xcoef[(3*p+1):(3*p+q),1]
-  trt.2.y.loading <- trt.2.cancor.res$xcoef[(2*p+1):(ncol(trt.2.left.matrix)),1]
-  # TODO: check if xcoef give the same as ycoef
 
+  cca.res <- cancor(rbind(Left.matrix, Right.matrix),
+                     rbind(Right.matrix, Left.matrix),
+                    xcenter=F, ycenter=F)
 
   # Calculate the canonical variates
 
@@ -171,8 +217,8 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   # y0.proj <- scale(diff.y, center = diff.y.0.center, scale=F)%*%diff.y.0.loading
   # y1.proj <- scale(diff.y, center = diff.y.1.center, scale= F) %*% diff.y.1.loading
 
-  x.loading <- (trt.2.x.loading - trt.1.x.loading)
-  x.proj <- x.b %*% x.loading
+  x.loading <- cca.res$xcoef[1:p,1]
+  x.proj <- .x.b %*% x.loading
 
 
   # Generate a vector consists of split value candidates
@@ -237,7 +283,7 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   # Create a new node
   node <-data.tree::Node$new(
     paste("split.value = ", round(split.value, digits=3)),                        # Node name: must be unique to siblings
-    xcenter =rep(0, p), #x.center,
+    xcenter = attr(.x.b, "scaled:center"), #x.center,
     split.comb=x.loading, split.value=split.value,
     # Outcome=NULL, Treatment=NULL
     Outcome.1=NULL,
