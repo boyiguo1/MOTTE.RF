@@ -220,7 +220,9 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   # y1.proj <- scale(diff.y, center = diff.y.1.center, scale= F) %*% diff.y.1.loading
 
   x.loading <- cca.res$xcoef[1:p,1]
+  y.loading <- cca.res$xcoef[((2*p+1):(2*p+q)), 1]
   x.proj <- .x.b %*% x.loading
+  y.proj <- delta.y %*% y.loading
 
 
   # Generate a vector consists of split value candidates
@@ -265,13 +267,15 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
     L.length <- sum(L.node.indices)
     R.length <- sum(R.node.indices)
 
+    treat.bool <- treat==trt.lvl[1]
+
     # revision to split based on treatment difference reflected on X^b
-    #total.var <- (n-1)/n*var(y0.proj) + (n-1)/n*var(y1.proj)
-    total.var <- (n-1)/n*var(x.proj)
-    #left.var <- (L.length-1)/n*(var(y0.proj[L.node.indices]) + var(y1.proj[L.node.indices]))
-    left.var <- (L.length-1)/n*var(x.proj[L.node.indices])
-    #right.var <- (R.length-1)/n*(var(y0.proj[R.node.indices]) + var(y1.proj[R.node.indices]))
-    right.var <- (R.length-1)/n*var(x.proj[R.node.indices])
+    total.var <- var(y.proj[treat.bool]) + var(y.proj[!treat.bool])
+    #total.var <- (n-1)/n*var(x.proj)
+    left.var <- var(y.proj[L.node.indices & treat.bool]) + var(y.proj[L.node.indices & (!treat.bool)])
+    # left.var <- (L.length-1)/n*var(x.proj[L.node.indices])
+    right.var <- var(y.proj[R.node.indices & treat.bool]) + var(y.proj[R.node.indices & (!treat.bool)])
+    # right.var <- (R.length-1)/n*var(x.proj[R.node.indices])
     return(
       matrix(
         c(x,total.var-left.var-right.var),
