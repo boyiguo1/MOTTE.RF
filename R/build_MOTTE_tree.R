@@ -222,7 +222,7 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   x.loading <- cca.res$xcoef[1:p,1]
   y.loading <- cca.res$xcoef[((2*p+1):(2*p+q)), 1]
   x.proj <- .x.b %*% x.loading
-  y.proj <- delta.y %*% y.loading
+  y.proj <- y.e %*% y.loading
 
 
   # Generate a vector consists of split value candidates
