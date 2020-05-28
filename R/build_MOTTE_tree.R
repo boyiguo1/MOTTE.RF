@@ -114,15 +114,17 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   # Local level CCA using the subset of variables
 
   .x.b <- scale(x.b, scale=F)
+  delta.x <- x.e-x.b
+  delta.y <- y.e-y.b
 
   x.b.1 <- .x.b[treat==trt.lvl[1],,drop=F]
   x.b.2 <- .x.b[treat!=trt.lvl[1],,drop=F]
-  x.e.1 <- x.e[treat==trt.lvl[1],,drop=F] %>% scale(scale=F)
-  x.e.2 <- x.e[treat!=trt.lvl[1],,drop=F] %>% scale(scale=F)
+  x.e.1 <- delta.x[treat==trt.lvl[1],,drop=F] %>% scale(scale=F)
+  x.e.2 <- delta.x[treat!=trt.lvl[1],,drop=F] %>% scale(scale=F)
   # y.b.1 <-
   # y.b.2 <-
-  y.e.1 <- y.e[treat==trt.lvl[1],,drop=F] %>% scale(scale=F)
-  y.e.2 <- y.e[treat!=trt.lvl[1],,drop=F] %>% scale(scale=F)
+  y.e.1 <- delta.y[treat==trt.lvl[1],,drop=F] %>% scale(scale=F)
+  y.e.2 <- delta.y[treat!=trt.lvl[1],,drop=F] %>% scale(scale=F)
 
 #
 #
