@@ -186,8 +186,8 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
       cbind(matrix(0,nrow=n-n.treat.1,ncol=2*p),-1*y.e.2),
       cbind(matrix(0,nrow=n.treat.1,ncol=p),x.e.1,matrix(0,nrow=n.treat.1,ncol=q)),
       cbind(matrix(0,nrow=n-n.treat.1,ncol=p),-1*x.e.2,matrix(0,nrow=n-n.treat.1,ncol=q)),
-      cbind(matrix(0,nrow=n.treat.1,ncol=p),y.e.1, matrix(0,nrow=n.treat.1,ncol=q)),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=p),y.e.2, matrix(0,nrow=n-n.treat.1,ncol=q))
+      cbind(matrix(0,nrow=n.treat.1,ncol=2*p),y.e.1),
+      cbind(matrix(0,nrow=n-n.treat.1,ncol=2*p),y.e.2)
     )
 
 
