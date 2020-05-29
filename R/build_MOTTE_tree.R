@@ -117,6 +117,11 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   delta.x <- x.e-x.b
   delta.y <- y.e-y.b
 
+  treat.code <- case_when(
+    treat==trt.lvl[1] ~ 1,
+    treat==trt.lvl[2] ~ -1
+  )
+
   x.b.1 <- .x.b[treat==trt.lvl[1],,drop=F]
   x.b.2 <- .x.b[treat!=trt.lvl[1],,drop=F]
   x.e.1 <- delta.x[treat==trt.lvl[1],,drop=F] %>% scale(scale=F)
@@ -170,7 +175,8 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
       cbind(x.b.2,matrix(0,nrow=n-n.treat.1,ncol=p+q)),
       cbind(x.b.1,matrix(0,nrow=n.treat.1,ncol=p+q)),
       cbind(x.b.2,matrix(0,nrow=n-n.treat.1,ncol=p+q)),
-      cbind(matrix(0,nrow=n,ncol=p),delta.x, matrix(0,nrow=n,ncol=q))
+      cbind(matrix(0,nrow=n.treat.1,ncol=p),x.e.1, matrix(0,nrow=n.treat.1,ncol=q)),
+      cbind(matrix(0,nrow=n-n.treat.1,ncol=p),x.e.2, matrix(0,nrow=n-n.treat.1,ncol=q))
       # cbind(matrix(0,nrow=n-n.treat.1,ncol=p),diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=q))
     )
 
@@ -180,7 +186,8 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
       cbind(matrix(0,nrow=n-n.treat.1,ncol=2*p),-1*y.e.2),
       cbind(matrix(0,nrow=n.treat.1,ncol=p),x.e.1,matrix(0,nrow=n.treat.1,ncol=q)),
       cbind(matrix(0,nrow=n-n.treat.1,ncol=p),-1*x.e.2,matrix(0,nrow=n-n.treat.1,ncol=q)),
-      cbind(matrix(0,nrow=n,ncol=2*p),delta.y)
+      cbind(matrix(0,nrow=n.treat.1,ncol=p),y.e.1, matrix(0,nrow=n.treat.1,ncol=q)),
+      cbind(matrix(0,nrow=n-n.treat.1,ncol=p),y.e.2, matrix(0,nrow=n-n.treat.1,ncol=q))
     )
 
 
@@ -221,7 +228,7 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   x.loading <- cca.res$xcoef[1:p,1]
   y.loading <- cca.res$xcoef[((2*p+1):(2*p+q)), 1]
   x.proj <- .x.b %*% x.loading
-  y.proj <- y.e %*% y.loading
+  y.proj <- (treat.code * delta.y) %*% y.loading
 
 
   # Generate a vector consists of split value candidates
