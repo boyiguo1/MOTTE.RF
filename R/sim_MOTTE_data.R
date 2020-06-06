@@ -70,7 +70,7 @@ sim_MOTTE_data <- function(
 
   # TODO: Improve the warning language
   .link.f <- switch(link.f,
-                    "Linear" = function(x){x%*%Z/5},
+                    "Linear" = function(x){x%*%Z/3},
                     "Polynomial" = function(x){(x^2)%*%Z/3},
                     stop("Link function doesn't exist, choose from 'Linear' or 'Polynomial'"))
   .trt.f <- switch(trt.f,
