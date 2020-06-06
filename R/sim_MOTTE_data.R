@@ -61,7 +61,7 @@ sim_MOTTE_data <- function(
 
   # TODO: extract this as argument for the parameter
   c.x <- sum((1:3)^2)/6
-  c.y <- sum((1:3)^2)/2
+  c.y <- sum((1:3)^2)/6
 
   # c.x <- 0.5
   # c.y <- 0.5
@@ -70,8 +70,8 @@ sim_MOTTE_data <- function(
 
   # TODO: Improve the warning language
   .link.f <- switch(link.f,
-                    "Linear" = function(x){x%*%Z/3},
-                    "Polynomial" = function(x){(x^2)%*%Z/3},
+                    "Linear" = function(x){x%*%Z},
+                    "Polynomial" = function(x){(x^2)%*%Z},
                     stop("Link function doesn't exist, choose from 'Linear' or 'Polynomial'"))
   .trt.f <- switch(trt.f,
                    "Linear" = function(x, trt){sweep(cbind(1,x), 1, trt, "*")%*%B},
