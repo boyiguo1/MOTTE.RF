@@ -150,19 +150,19 @@ create.B <- function(p, intercept=T){
   rbind(ifelse(intercept, 1, 0),
         cbind(
           matrix(
-            c(1:3/sqrt(7), rep(0, p-3),
-              rep(0,3), 1:3/sqrt(7), rep(0, p-6),
-              rep(0,6), 1:3/sqrt(7), rep(0, p-9)),
+            c(1:3/sqrt(3), rep(0, p-3),
+              rep(0,3), 1:3/sqrt(3), rep(0, p-6),
+              rep(0,6), 1:3/sqrt(3), rep(0, p-9)),
             nrow = p, ncol = 3),
           -1*matrix(
-            c(1:3/sqrt(7), rep(0, p-3),
-              rep(0,3), 1:3/sqrt(7), rep(0, p-6),
-              rep(0,6), 1:3/sqrt(7), rep(0, p-9)),
+            c(1:3/sqrt(3), rep(0, p-3),
+              rep(0,3), 1:3/sqrt(3), rep(0, p-6),
+              rep(0,6), 1:3/sqrt(3), rep(0, p-9)),
             nrow = p, ncol = 3),
           matrix(
-            c(c(1,-1,1)*(1:3)/sqrt(7), rep(0, p-3),
-              rep(0,3), c(-1,1,-1)*(1:3)/sqrt(7), rep(0, p-6),
-              rep(0,6), c(1,1,-1)*(1:3)/sqrt(7), rep(0, p-9)),
+            c(c(1,-1,1)*(1:3)/sqrt(3), rep(0, p-3),
+              rep(0,3), c(-1,1,-1)*(1:3)/sqrt(3), rep(0, p-6),
+              rep(0,6), c(1,1,-1)*(1:3)/sqrt(3), rep(0, p-9)),
             nrow = p, ncol = 3),
           matrix(0,nrow = p, ncol = p-9)
         )
