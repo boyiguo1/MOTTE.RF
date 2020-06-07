@@ -70,8 +70,8 @@ sim_MOTTE_data <- function(
 
   # TODO: Improve the warning language
   .link.f <- switch(link.f,
-                    "Linear" = function(x){x%*%Z/4},
-                    "Polynomial" = function(x){(x^2)%*%Z/4},
+                    "Linear" = function(x){x%*%Z/5},
+                    "Polynomial" = function(x){(x^2)%*%Z/5},
                     stop("Link function doesn't exist, choose from 'Linear' or 'Polynomial'"))
   .trt.f <- switch(trt.f,
                    "Linear" = function(x, trt){sweep(cbind(1,x), 1, trt, "*")%*%B},
@@ -154,15 +154,15 @@ create.B <- function(p, intercept=T){
               rep(0,3), 1:3/sqrt(3), rep(0, p-6),
               rep(0,6), 1:3/sqrt(3), rep(0, p-9)),
             nrow = p, ncol = 3),
-          -1*matrix(
+          matrix(
             c(1:3/sqrt(3), rep(0, p-3),
               rep(0,3), 1:3/sqrt(3), rep(0, p-6),
               rep(0,6), 1:3/sqrt(3), rep(0, p-9)),
             nrow = p, ncol = 3),
           matrix(
-            c(c(1,-1,1)*(1:3)/sqrt(3), rep(0, p-3),
-              rep(0,3), c(-1,1,-1)*(1:3)/sqrt(3), rep(0, p-6),
-              rep(0,6), c(1,1,-1)*(1:3)/sqrt(3), rep(0, p-9)),
+            c((1:3)/sqrt(3), rep(0, p-3),
+              rep(0,3), (1:3)/sqrt(3), rep(0, p-6),
+              rep(0,6), (1:3)/sqrt(3), rep(0, p-9)),
             nrow = p, ncol = 3),
           matrix(0,nrow = p, ncol = p-9)
         )
@@ -181,9 +181,9 @@ create.B <- function(p, intercept=T){
 #' create.Z(10,3)
 create.Z <- function(p, q){
   matrix(
-    c(1:3/sqrt(12), rep(0, p-3),
-      rep(0,3), -1*(1:3)/sqrt(12), rep(0, p-6),
-      rep(0,6), c(1,-1,1)*(1:3)/sqrt(12), rep(0, p-9),
+    c(1:3/sqrt(7), rep(0, p-3),
+      rep(0,3), (1:3)/sqrt(7), rep(0, p-6),
+      rep(0,6), (1:3)/sqrt(7), rep(0, p-9),
       rep(0, p*(q-3))
       ),
     nrow = p, ncol = q
