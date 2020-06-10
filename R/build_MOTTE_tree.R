@@ -81,8 +81,8 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
       data.tree::Node$new(
         paste("Terminal Node: ", n ," members", "Unique"),
         xcenter = NULL, split.comb=NULL, split.value=NULL,
-        Outcome.1=y.e[treat==trt.lvl[1],,drop=F],
-        Outcome.2=y.e[treat==trt.lvl[2],,drop=F])
+        Outcome.1=(y.e-y.b)[treat==trt.lvl[1],,drop=F],
+        Outcome.2=(y.e-y.b)[treat==trt.lvl[2],,drop=F])
     )}
 
   ### Base cases:
@@ -92,8 +92,8 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
     return(
       data.tree::Node$new(paste("Terminal Node: ", n," members"),
                           xcenter = NULL, split.comb=NULL, split.value=NULL,
-                          Outcome.1=y.e[treat==trt.lvl[1],,drop=F],
-                          Outcome.2=y.e[treat==trt.lvl[2],,drop=F])
+                          Outcome.1=(y.e-y.b)[treat==trt.lvl[1],,drop=F],
+                          Outcome.2=(y.e-y.b)[treat==trt.lvl[2],,drop=F])
     )}
 
   ### Base cases:
@@ -105,8 +105,8 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
     return(
       data.tree::Node$new(paste("Terminal Node: ", n ," members"),
                           xcenter = NULL, split.comb=NULL, split.value=NULL,
-                          Outcome.1=y.e[treat==trt.lvl[1],,drop=F],
-                          Outcome.2=y.e[treat==trt.lvl[2],,drop=F])
+                          Outcome.1=(y.e-y.b)[treat==trt.lvl[1],,drop=F],
+                          Outcome.2=(y.e-y.b)[treat==trt.lvl[2],,drop=F])
     )}
 
   ### Recursive cases:
@@ -247,8 +247,8 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
     return(
       data.tree::Node$new(paste("Terminal Node: ", n," members. No split"),
                           xcenter = NULL, split.comb=NULL, split.value=NULL,
-                          Outcome.1=y.e[treat==trt.lvl[1],,drop=F],
-                          Outcome.2=y.e[treat==trt.lvl[2],,drop=F])
+                          Outcome.1=(y.e-y.b)[treat==trt.lvl[1],,drop=F],
+                          Outcome.2=(y.e-y.b)[treat==trt.lvl[2],,drop=F])
     )
   }
 
