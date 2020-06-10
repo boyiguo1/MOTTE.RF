@@ -44,4 +44,12 @@ with(train.dat,
                      nodesize=30, nsplits=NULL, left.out = 0.1)
  )
 
+ train.dat <- tmp.dat$train
+
+   x.b <- train.dat$x.b
+   x.e <- train.dat$x.e
+   treat <- train.dat$trt
+   y.b <- train.dat$y.b
+   y.e <- train.dat$y.e
+
 }

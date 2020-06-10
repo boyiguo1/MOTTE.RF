@@ -27,8 +27,8 @@
 #' q = 3
 #' ratio = 0.5
 #' cov.mat = diag(p)
-#' trt.f = "Polynomial"
-#' link.f = "Polynomial"
+#' trt.f = 1
+#' link.f = 1
 #' B = create.B(p)
 #' Z = create.Z(p,q)
 #'

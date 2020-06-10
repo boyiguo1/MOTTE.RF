@@ -119,6 +119,37 @@ calcTrtDiff.single <- function(forest, x.b){
   colMeans(res) %>% t %>% data.frame
 }
 
+
+#' Title
+#'
+#' @param forest
+#' @param x.b
+#'
+#' @return
+#' @export
+#'
+#' @examples
+predict_MOTTE <- function(forest, x.b){
+  apply(x.b, 1, FUN = function(x, forest)
+    predict_single(forest = forest, x.b=x),
+    forest = forest) %>%
+    dplyr::bind_rows()
+}
+
+#' @export
+predict_single <- function(forest, x.b){
+  res <- traverseForest_outcome(forest, x.b)
+  # group_by(TREATMENT) %>%
+  # summarize_all(.funs = mean, na.rm=TRUE) %>%
+  # #TODO: Improve the treatment naming part for general function use
+  # ungroup %>% select(-TREATMENT)
+  #TODO: this is Bad
+  # res[1,]-res[2,]
+  # tmp <- 1
+
+  colMeans(res) %>% t %>% data.frame
+}
+
 #' Traverse Forest
 #'  A wrapper function using traverseTree to traverse the forest
 #'
@@ -133,6 +164,21 @@ traverseForest <- function(forest, x.b) {
   # Check root is a list of trees
   # Check x.b is one observation
   return(purrr::map_dfr(forest,traverseTree,x.b=x.b))
+}
+
+#' Title
+#'
+#' @param forest
+#' @param x.b
+#'
+#' @return
+#' @export
+#'
+#' @examples
+traverseForest_outcome <- function(forest, x.b) {
+  # Check root is a list of trees
+  # Check x.b is one observation
+  return(purrr::map_dfr(forest,traverseTree_outcome,x.b=x.b))
 }
 
 
@@ -174,5 +220,47 @@ traverseTree <- function(root, x.b){
       return(traverseTree(root$children[[ge.node.index]],x.b))
     else
       return(traverseTree(root$children[[l.node.index]],x.b))
+  }
+}
+
+
+
+#' Title
+#'
+#' @param root
+#' @param x.b
+#'
+#' @return
+#' @export
+#'
+#' @examples
+traverseTree_outcome <- function(root, x.b){
+  # Check the validity of root
+
+  # Check x.b is a vector instead of a matrix
+
+  x.b <- matrix(x.b, nrow=1)
+
+  split.comb <- root$split.comb
+  split.value <- root$split.value
+
+  if(root$isLeaf){
+    return(data.frame(Outcome.1=t(colMeans(root$Outcome.1)),
+                      Outcome.2=t(colMeans(root$Outcome.2))))
+  }
+  else{
+    # Test cases
+    if(length(root$children) > 2)
+      stop("Invalid node: More than 2 children")
+    if(length(root$children) == 0)
+      stop("Invalid node: Inner node has no child")
+
+    ge.node.index <- ifelse(root$children[[1]]$side,1,2)
+    l.node.index <- ifelse(root$children[[1]]$side,2,1)
+
+    if((x.b-root$xcenter)%*%split.comb>=split.value)
+      return(traverseTree_outcome(root$children[[ge.node.index]],x.b))
+    else
+      return(traverseTree_outcome(root$children[[l.node.index]],x.b))
   }
 }

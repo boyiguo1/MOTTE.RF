@@ -46,10 +46,22 @@ Simulate MOTTE formated data
 }
 \examples{
 set.seed(1)
-B <- create.B(10)
-Z <- create.Z(10, 3)
 
-sim_MOTTE_data( n.train = 500, n.test = 200,
+n.train = 200
+n.test = 100
+p = 10
+q = 3
+ratio = 0.5
+cov.mat = diag(p)
+trt.f = 1
+link.f = 1
+B = create.B(p)
+Z = create.Z(p,q)
+
+# B <- create.B(10)
+# Z <- create.Z(10, 3)
+
+sim.dat <- sim_MOTTE_data( n.train = 500, n.test = 200,
 p = 10, q = 3, ratio = 0.5,
 B = B, Z = Z)
 
