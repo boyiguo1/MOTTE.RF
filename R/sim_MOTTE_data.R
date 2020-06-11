@@ -60,8 +60,11 @@ sim_MOTTE_data <- function(
 ){
 
   # TODO: extract this as argument for the parameter
-  c.x <- 0.001#sum((1:3)^2)/6
-  c.y <- 0.001#sum((1:3)^2)/6
+  # c.x <- 0.001#sum((1:3)^2)/6
+  # c.y <- 0.001#sum((1:3)^2)/6
+
+  c.x <- sum((1:3)^2)/6
+  c.y <- sum((1:3)^2)/6
 
   # c.x <- 0.5
   # c.y <- 0.5
