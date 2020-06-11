@@ -101,13 +101,13 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   # The number of observations in each group is not larger than dimensions
   # Enforced to prevent error in CCA
 
-  if(min(n-n.treat.1,n.treat.1) <= max(p,q)){
-    return(
-      data.tree::Node$new(paste("Terminal Node: ", n ," members"),
-                          xcenter = NULL, split.comb=NULL, split.value=NULL,
-                          Outcome.1=(y.e-y.b)[treat==trt.lvl[1],,drop=F],
-                          Outcome.2=(y.e-y.b)[treat==trt.lvl[2],,drop=F])
-    )}
+  # if(min(n-n.treat.1,n.treat.1) <= max(p,q)){
+  #   return(
+  #     data.tree::Node$new(paste("Terminal Node: ", n ," members"),
+  #                         xcenter = NULL, split.comb=NULL, split.value=NULL,
+  #                         Outcome.1=(y.e-y.b)[treat==trt.lvl[1],,drop=F],
+  #                         Outcome.2=(y.e-y.b)[treat==trt.lvl[2],,drop=F])
+  #   )}
 
   ### Recursive cases:
 
