@@ -27,8 +27,8 @@
 #' q = 3
 #' ratio = 0.5
 #' cov.mat = diag(p)
-#' trt.f = 1
-#' link.f = 1
+#' trt.f = "Polynomial"
+#' link.f = "Polynomial"
 #' B = create.B(p)
 #' Z = create.Z(p,q)
 #'
@@ -60,11 +60,8 @@ sim_MOTTE_data <- function(
 ){
 
   # TODO: extract this as argument for the parameter
-  # c.x <- 0.001#sum((1:3)^2)/6
-  # c.y <- 0.001#sum((1:3)^2)/6
-
-  c.x <- sum((1:3)^2)/15
-  c.y <- sum(1:5/sqrt(3)/12)
+  c.x <- sum((1:3)^2)/6
+  c.y <- sum((1:3)^2)/6
 
   # c.x <- 0.5
   # c.y <- 0.5
@@ -73,12 +70,12 @@ sim_MOTTE_data <- function(
 
   # TODO: Improve the warning language
   .link.f <- switch(link.f,
-                    "Linear" = function(x){x%*%Z},
-                    "Polynomial" = function(x){(x^2)%*%Z},
+                    "Linear" = function(x){x%*%Z/5},
+                    "Polynomial" = function(x){(x^2)%*%Z/5},
                     stop("Link function doesn't exist, choose from 'Linear' or 'Polynomial'"))
   .trt.f <- switch(trt.f,
                    "Linear" = function(x, trt){sweep(cbind(1,x), 1, trt, "*")%*%B},
-                   "Polynomial" = function(x, trt){(sweep(cbind(1,x)%*%B/6, 1, trt, "*"))},
+                   "Polynomial" = function(x, trt){(sweep(cbind(1,x^2), 1, trt, "*"))%*%B},
                    "Box" = function(x, trt){
                      .x <- x
                      for (i in 1: nrow(.x)) {
@@ -153,19 +150,19 @@ create.B <- function(p, intercept=T){
   rbind(ifelse(intercept, 1, 0),
         cbind(
           matrix(
-            c(1:3/sqrt(10), rep(0, p-3),
-              rep(0,3), 1:3/sqrt(10), rep(0, p-6),
-              rep(0,6), 1:3/sqrt(10), rep(0, p-9)),
+            c(1:3/sqrt(3), rep(0, p-3),
+              rep(0,3), 1:3/sqrt(3), rep(0, p-6),
+              rep(0,6), 1:3/sqrt(3), rep(0, p-9)),
             nrow = p, ncol = 3),
           matrix(
-            c(1:3/sqrt(10), rep(0, p-3),
-              rep(0,3), 1:3/sqrt(10), rep(0, p-6),
-              rep(0,6), 1:3/sqrt(10), rep(0, p-9)),
+            c(c(1,-1,-1)*1:3/sqrt(3), rep(0, p-3),
+              rep(0,3), c(1,-1,-1)*1:3/sqrt(3), rep(0, p-6),
+              rep(0,6), c(1,-1,-1)*1:3/sqrt(3), rep(0, p-9)),
             nrow = p, ncol = 3),
           matrix(
-            c((1:3)/sqrt(10), rep(0, p-3),
-              rep(0,3), (1:3)/sqrt(10), rep(0, p-6),
-              rep(0,6), (1:3)/sqrt(10), rep(0, p-9)),
+            c(c(1,-1,1)*(1:3)/sqrt(3), rep(0, p-3),
+              rep(0,3), c(1,-1,1)*(1:3)/sqrt(3), rep(0, p-6),
+              rep(0,6), c(1,-1,1)*(1:3)/sqrt(3), rep(0, p-9)),
             nrow = p, ncol = 3),
           matrix(0,nrow = p, ncol = p-9)
         )
@@ -184,11 +181,11 @@ create.B <- function(p, intercept=T){
 #' create.Z(10,3)
 create.Z <- function(p, q){
   matrix(
-    c(1:5/sqrt(3), rep(0, p-5),
-      rep(0,3), (1:5)/sqrt(3), rep(0, p-8),
-      rep(0,6), (1:4)/sqrt(3), rep(0, p-10),
+    c(1:3/sqrt(7), rep(0, p-3),
+      rep(0,3), -1*(1:3)/sqrt(7), rep(0, p-6),
+      rep(0,6), c(1,-1,1)*(1:3)/sqrt(7), rep(0, p-9),
       rep(0, p*(q-3))
-      ),
+    ),
     nrow = p, ncol = q
-  )/10
+  )
 }
