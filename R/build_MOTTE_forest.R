@@ -101,8 +101,15 @@ build_MOTTE_forest <- function(
   if(nCore==1)
   {
     forest <- lapply(1:ntree,FUN = function(x){
+      trt_tmp <- data.frame(treat) %>% mutate(id=1:n())
+
+      idx <- purrr::map(levels(treat), function(lvl){
+        trt_tmp %>% filter(treat==lvl) %>% pull(id) %>% sample(replace=T)
+      }) %>% unlist
+
+
       return(build_MOTTE_tree(
-        x.b=x.b, x.e=x.e, treat=treat, y.b=y.b, y.e=y.e,
+        x.b=x.b[idx,], x.e=x.e[idx,], treat=treat[idx,], y.b=y.b[idx,], y.e=y.e[idx,],
         nodesize=nodesize, nsplits=nsplits, left.out = left.out
       )
       )
@@ -119,10 +126,17 @@ build_MOTTE_forest <- function(
                       .export=c("build_MOTTE_tree","is.between"),
                       .multicombine = TRUE,
                       .verbose=TRUE,
-                      .packages = c("CCA","data.tree"))  %dopar%
+                      .packages = c("CCA","data.tree", "purrr", "dplyr"))  %dopar%
                       {
+
+                        trt_tmp <- data.frame(treat) %>% mutate(id=1:n())
+
+                        idx <- purrr::map(levels(treat), function(lvl){
+                          trt_tmp %>% filter(treat==lvl) %>% pull(id) %>% sample(replace=T)
+                        }) %>% unlist
+
                         tree <- build_MOTTE_tree(
-                          x.b=x.b, x.e=x.e, treat=treat, y.b=y.b, y.e=y.e,
+                          x.b=x.b[idx,], x.e=x.e[idx,], treat=treat[idx,], y.b=y.b[idx,], y.e=y.e[idx,],
                           nodesize=nodesize, nsplits=nsplits, left.out = left.out
                         )
                         print("finished building tree")
