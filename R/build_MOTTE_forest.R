@@ -49,6 +49,11 @@
 #' # with(train.dat,
 #'     build_MOTTE_forest(x.b, x.e, treat, y.b, y.e)
 #' #)
+#'
+#'
+#' nodesize=10
+#' left.out=0.1
+#'
 
 build_MOTTE_forest <- function(
   x.b, x.e,
@@ -134,6 +139,8 @@ build_MOTTE_forest <- function(
                         idx <- purrr::map(levels(treat), function(lvl){
                           trt_tmp %>% filter(treat==lvl) %>% pull(id) %>% sample(replace=T)
                         }) %>% unlist
+
+                        if(any(idx>length(treat))) stop("idx out of sample space")
 
                         tree <- build_MOTTE_tree(
                           x.b=x.b[idx,], x.e=x.e[idx,], treat=treat[idx], y.b=y.b[idx,], y.e=y.e[idx,],
