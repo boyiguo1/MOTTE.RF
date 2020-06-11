@@ -129,7 +129,7 @@ build_MOTTE_forest <- function(
     ### Construct forest with
     forest <- foreach(i = 1:ntree,
                       .combine = c,
-                      .export=c("build_MOTTE_tree","is.between"),
+                      .export=c("build_MOTTE_tree","is.between", "stable.CCA"),
                       .multicombine = TRUE,
                       .verbose=TRUE,
                       .packages = c("CCA","data.tree", "purrr", "dplyr"))  %dopar%

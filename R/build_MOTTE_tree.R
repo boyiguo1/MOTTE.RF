@@ -212,9 +212,14 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   #                    rbind(Right.matrix, Left.matrix))
 
 
-  cca.res <- cancor(rbind(Left.matrix, Right.matrix),
+  # cca.res <- cancor(rbind(Left.matrix, Right.matrix),
+  #                    rbind(Right.matrix, Left.matrix),
+  #                   xcenter=F, ycenter=F)
+
+  cca.res <- stable.CCA(rbind(Left.matrix, Right.matrix),
                      rbind(Right.matrix, Left.matrix),
                     xcenter=F, ycenter=F)
+
 
   # Calculate the canonical variates
 
