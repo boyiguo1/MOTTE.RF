@@ -63,8 +63,8 @@ sim_MOTTE_data <- function(
   # c.x <- 0.001#sum((1:3)^2)/6
   # c.y <- 0.001#sum((1:3)^2)/6
 
-  c.x <- sum((1:3)^2)/6
-  c.y <- sum((1:3)^2)/6
+  c.x <- sum((1:3)^2)/15
+  c.y <- sum(1:5/sqrt(3)/12)
 
   # c.x <- 0.5
   # c.y <- 0.5
@@ -77,8 +77,8 @@ sim_MOTTE_data <- function(
                     "Polynomial" = function(x){(x^2)%*%Z},
                     stop("Link function doesn't exist, choose from 'Linear' or 'Polynomial'"))
   .trt.f <- switch(trt.f,
-                   "Linear" = function(x, trt){sweep(cbind(0.01,x), 1, trt, "*")%*%B},
-                   "Polynomial" = function(x, trt){(sweep(cbind(0.01,x^2), 1, trt, "*"))%*%B},
+                   "Linear" = function(x, trt){sweep(cbind(1,x), 1, trt, "*")%*%B},
+                   "Polynomial" = function(x, trt){(sweep(cbind(1,x)%*%B/6, 1, trt, "*"))},
                    "Box" = function(x, trt){
                      .x <- x
                      for (i in 1: nrow(.x)) {
