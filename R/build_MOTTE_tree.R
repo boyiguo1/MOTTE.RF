@@ -175,7 +175,7 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
       cbind(x.b.2,matrix(0,nrow=n-n.treat.1,ncol=p+q)),
       cbind(x.b.1,matrix(0,nrow=n.treat.1,ncol=p+q)),
       cbind(x.b.2,matrix(0,nrow=n-n.treat.1,ncol=p+q)),
-      cbind(matrix(0,nrow=n,ncol=p),treat.code*delta.x, matrix(0,nrow=n,ncol=q))
+      #cbind(matrix(0,nrow=n,ncol=p),treat.code*delta.x, matrix(0,nrow=n,ncol=q))
       # cbind(matrix(0,nrow=n-n.treat.1,ncol=p),diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=q))
     )
 
@@ -185,7 +185,7 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
       cbind(matrix(0,nrow=n-n.treat.1,ncol=2*p),-1*y.e.2),
       cbind(matrix(0,nrow=n.treat.1,ncol=p),x.e.1,matrix(0,nrow=n.treat.1,ncol=q)),
       cbind(matrix(0,nrow=n-n.treat.1,ncol=p),-1*x.e.2,matrix(0,nrow=n-n.treat.1,ncol=q)),
-      cbind(matrix(0,nrow=n,ncol=2*p),treat.code*delta.y)
+      # cbind(matrix(0,nrow=n,ncol=2*p),treat.code*delta.y)
     )
 
 
@@ -226,7 +226,8 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   x.loading <- cca.res$xcoef[1:p,1]
   y.loading <- cca.res$xcoef[((2*p+1):(2*p+q)), 1]
   x.proj <- .x.b %*% x.loading
-  y.proj <- (treat.code * delta.y) %*% y.loading
+  y.proj <- delta.y %*% y.loading
+  #y.proj <- (treat.code * delta.y) %*% y.loading
 
 
   # Generate a vector consists of split value candidates
@@ -274,18 +275,13 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
     treat.bool <- treat==trt.lvl[1]
 
     # # revision to split based on treatment difference reflected on X^b
-    # total.var <- var(y.proj[treat.bool]) + var(y.proj[!treat.bool])
-    # #total.var <- (n-1)/n*var(x.proj)
-    # left.var <- var(y.proj[L.node.indices & treat.bool]) + var(y.proj[L.node.indices & (!treat.bool)])
-    # # left.var <- (L.length-1)/n*var(x.proj[L.node.indices])
-    # right.var <- var(y.proj[R.node.indices & treat.bool]) + var(y.proj[R.node.indices & (!treat.bool)])
-    # # right.var <- (R.length-1)/n*var(x.proj[R.node.indices])
+    total.var <- var(y.proj[treat.bool]) + var(y.proj[!treat.bool])
+    #total.var <- (n-1)/n*var(x.proj)
+    left.var <- var(y.proj[L.node.indices & treat.bool]) + var(y.proj[L.node.indices & (!treat.bool)])
+    # left.var <- (L.length-1)/n*var(x.proj[L.node.indices])
+    right.var <- var(y.proj[R.node.indices & treat.bool]) + var(y.proj[R.node.indices & (!treat.bool)])
+    # right.var <- (R.length-1)/n*var(x.proj[R.node.indices])
 
-    total.var <- (n-1)/n*var(y.proj)
-    #left.var <- var(y.proj[L.node.indices & treat.bool]) + var(y.proj[L.node.indices & (!treat.bool)])
-    left.var <- (L.length-1)/n*var(y.proj[L.node.indices])
-    #right.var <- var(y.proj[R.node.indices & treat.bool]) + var(y.proj[R.node.indices & (!treat.bool)])
-    right.var <- (R.length-1)/n*var(y.proj[R.node.indices])
     return(
       matrix(
         c(x,total.var-left.var-right.var),
