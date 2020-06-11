@@ -174,7 +174,7 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
       cbind(x.b.1,matrix(0,nrow=n.treat.1,ncol=p+q)),
       cbind(x.b.2,matrix(0,nrow=n-n.treat.1,ncol=p+q)),
       cbind(x.b.1,matrix(0,nrow=n.treat.1,ncol=p+q)),
-      cbind(x.b.2,matrix(0,nrow=n-n.treat.1,ncol=p+q)),
+      cbind(x.b.2,matrix(0,nrow=n-n.treat.1,ncol=p+q))#,
       #cbind(matrix(0,nrow=n,ncol=p),treat.code*delta.x, matrix(0,nrow=n,ncol=q))
       # cbind(matrix(0,nrow=n-n.treat.1,ncol=p),diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=q))
     )
@@ -184,7 +184,7 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
       cbind(matrix(0,nrow=n.treat.1,ncol=2*p),y.e.1),
       cbind(matrix(0,nrow=n-n.treat.1,ncol=2*p),-1*y.e.2),
       cbind(matrix(0,nrow=n.treat.1,ncol=p),x.e.1,matrix(0,nrow=n.treat.1,ncol=q)),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=p),-1*x.e.2,matrix(0,nrow=n-n.treat.1,ncol=q)),
+      cbind(matrix(0,nrow=n-n.treat.1,ncol=p),-1*x.e.2,matrix(0,nrow=n-n.treat.1,ncol=q))#,
       # cbind(matrix(0,nrow=n,ncol=2*p),treat.code*delta.y)
     )
 
