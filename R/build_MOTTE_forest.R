@@ -136,7 +136,7 @@ build_MOTTE_forest <- function(
                         }) %>% unlist
 
                         tree <- build_MOTTE_tree(
-                          x.b=x.b[idx,], x.e=x.e[idx,], treat=treat[idx,], y.b=y.b[idx,], y.e=y.e[idx,],
+                          x.b=x.b[idx,], x.e=x.e[idx,], treat=treat[idx], y.b=y.b[idx,], y.e=y.e[idx,],
                           nodesize=nodesize, nsplits=nsplits, left.out = left.out
                         )
                         print("finished building tree")
