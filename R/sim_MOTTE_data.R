@@ -75,7 +75,8 @@ sim_MOTTE_data <- function(
                     stop("Link function doesn't exist, choose from 'Linear' or 'Polynomial'"))
   .trt.f <- switch(trt.f,
                    "Linear" = function(x, trt){sweep(cbind(1,x), 1, trt, "*")%*%B},
-                   "Polynomial" = function(x, trt){(sweep(cbind(1,x^2), 1, trt, "*"))%*%B},
+                   # "Polynomial" = function(x, trt){(sweep(cbind(1,x^2), 1, trt, "*"))%*%B},
+                   "Polynomial" = function(x, trt){(sweep((cbind(1,x)%*%B)^2, 1, trt, "*"))},
                    "Box" = function(x, trt){
                      .x <- x
                      for (i in 1: nrow(.x)) {
