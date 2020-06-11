@@ -109,12 +109,14 @@ build_MOTTE_forest <- function(
       trt_tmp <- data.frame(treat) %>% mutate(id=1:n())
 
       idx <- purrr::map(levels(treat), function(lvl){
-        trt_tmp %>% filter(treat==lvl) %>% pull(id) %>% sample(replace=T)
+
+        n <- sum(trt_tmp$trt==lvl)
+        trt_tmp %>% filter(treat==lvl) %>% pull(id) %>% sample(size = ceiling(n*0.8), replace=F)
       }) %>% unlist
 
 
       return(build_MOTTE_tree(
-        x.b=x.b[idx,], x.e=x.e[idx,], treat=treat[idx,], y.b=y.b[idx,], y.e=y.e[idx,],
+        x.b=x.b[idx,], x.e=x.e[idx,], treat=treat[idx], y.b=y.b[idx,], y.e=y.e[idx,],
         nodesize=nodesize, nsplits=nsplits, left.out = left.out
       )
       )
@@ -137,7 +139,8 @@ build_MOTTE_forest <- function(
                         trt_tmp <- data.frame(treat) %>% mutate(id=1:n())
 
                         idx <- purrr::map(levels(treat), function(lvl){
-                          trt_tmp %>% filter(treat==lvl) %>% pull(id) %>% sample(replace=T)
+                          n <- sum(trt_tmp$trt==lvl)
+                          trt_tmp %>% filter(treat==lvl) %>% pull(id) %>% sample(size = ceiling(n*0.8), replace=F)
                         }) %>% unlist
 
                         if(any(idx>length(treat))) stop("idx out of sample space")
