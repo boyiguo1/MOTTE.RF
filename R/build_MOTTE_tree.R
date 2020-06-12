@@ -83,52 +83,60 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   # The number of observations in each group is not larger than dimensions
   # Enforced to prevent error in CCA
 
-  # if(min(n-n.treat.1,n.treat.1) <= max(p,q)){
-  #   return(
-  #     data.tree::Node$new(paste("Terminal Node: ", n ," members"),
-  #                         xcenter = NULL, split.comb=NULL, split.value=NULL,
-  #                         Outcome.1=(y.e-y.b)[treat==trt.lvl[1],,drop=F],
-  #                         Outcome.2=(y.e-y.b)[treat==trt.lvl[2],,drop=F])
-  #   )}
+  if(min(n-n.treat.1,n.treat.1) <= max(p,q)){
+    return(
+      data.tree::Node$new(paste("Terminal Node: ", n ," members"),
+                          xcenter = NULL, split.comb=NULL, split.value=NULL,
+                          Outcome.1=(y.e-y.b)[treat==trt.lvl[1],,drop=F],
+                          Outcome.2=(y.e-y.b)[treat==trt.lvl[2],,drop=F])
+    )}
 
   ### Recursive cases:
 
   # Local level CCA using the subset of variables
-
-  .x.b <- scale(x.b, scale=F)
-  delta.x <- x.e-x.b
-  delta.y <- y.e-y.b
-
-  x.b.1 <- .x.b[treat==trt.lvl[1],,drop=F]
-  x.b.2 <- .x.b[treat!=trt.lvl[1],,drop=F]
-  x.e.1 <- delta.x[treat==trt.lvl[1],,drop=F] %>% scale(scale=F)
-  x.e.2 <- delta.x[treat!=trt.lvl[1],,drop=F] %>% scale(scale=F)
-  y.e.1 <- delta.y[treat==trt.lvl[1],,drop=F] %>% scale(scale=F)
-  y.e.2 <- delta.y[treat!=trt.lvl[1],,drop=F] %>% scale(scale=F)
-
   treat.code <- case_when(
     treat==trt.lvl[1] ~ 1,
     treat==trt.lvl[2] ~ -1
   )
 
+  .x.b <- scale(x.b, scale=F)
+  delta.x <- x.e-x.b
+  T.delta.x <- scale(treat.code*delta.x, scale=F)
+  delta.y <- y.e-y.b
+  T.delta.y <- scale(treat.code*delta.y, scale=F)
+
+  # x.b.1 <- .x.b[treat==trt.lvl[1],,drop=F]
+  # x.b.2 <- .x.b[treat!=trt.lvl[1],,drop=F]
+  # x.e.1 <- delta.x[treat==trt.lvl[1],,drop=F] %>% scale(scale=F)
+  # x.e.2 <- delta.x[treat!=trt.lvl[1],,drop=F] %>% scale(scale=F)
+  # y.e.1 <- delta.y[treat==trt.lvl[1],,drop=F] %>% scale(scale=F)
+  # y.e.2 <- delta.y[treat!=trt.lvl[1],,drop=F] %>% scale(scale=F)
+
+
 
 
   Left.matrix <-
     rbind(
-      cbind(x.b.1,matrix(0,nrow=n.treat.1,ncol=p+q)),
-      cbind(x.b.2,matrix(0,nrow=n-n.treat.1,ncol=p+q)),
-      cbind(x.b.1,matrix(0,nrow=n.treat.1,ncol=p+q)),
-      cbind(x.b.2,matrix(0,nrow=n-n.treat.1,ncol=p+q)),
-      cbind(matrix(0,nrow=n,ncol=p),treat.code*delta.x, matrix(0,nrow=n,ncol=q))
+      # cbind(x.b.1,matrix(0,nrow=n.treat.1,ncol=p+q)),
+      # cbind(x.b.2,matrix(0,nrow=n-n.treat.1,ncol=p+q)),
+      cbind(.x.b,matrix(0,nrow=n,ncol=p+q)),
+      # cbind(x.b.1,matrix(0,nrow=n.treat.1,ncol=p+q)),
+      # cbind(x.b.2,matrix(0,nrow=n-n.treat.1,ncol=p+q)),
+      cbind(.x.b,matrix(0,nrow=n,ncol=p+q)),
+      #cbind(matrix(0,nrow=n,ncol=p),treat.code*delta.x, matrix(0,nrow=n,ncol=q))
+      cbind(matrix(0,nrow=n,ncol=p),T.delta.x, matrix(0,nrow=n,ncol=q))
     )
 
   Right.matrix <-
     rbind(
-      cbind(matrix(0,nrow=n.treat.1,ncol=2*p),y.e.1),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=2*p),-1*y.e.2),
-      cbind(matrix(0,nrow=n.treat.1,ncol=p),x.e.1,matrix(0,nrow=n.treat.1,ncol=q)),
-      cbind(matrix(0,nrow=n-n.treat.1,ncol=p),-1*x.e.2,matrix(0,nrow=n-n.treat.1,ncol=q)),
-       cbind(matrix(0,nrow=n,ncol=2*p),treat.code*delta.y)
+      # cbind(matrix(0,nrow=n.treat.1,ncol=2*p),y.e.1),
+      # cbind(matrix(0,nrow=n-n.treat.1,ncol=2*p),-1*y.e.2),
+      cbind(matrix(0,nrow=n,ncol=2*p),T.delta.y),
+      # cbind(matrix(0,nrow=n.treat.1,ncol=p),x.e.1,matrix(0,nrow=n.treat.1,ncol=q)),
+      # cbind(matrix(0,nrow=n-n.treat.1,ncol=p),-1*x.e.2,matrix(0,nrow=n-n.treat.1,ncol=q)),
+      cbind(matrix(0,nrow=n,ncol=p),T.delta.x,matrix(0,nrow=n,ncol=q)),
+      # cbind(matrix(0,nrow=n,ncol=2*p),treat.code*delta.y)
+       cbind(matrix(0,nrow=n,ncol=2*p),T.delta.y)
     )
 
   # cca.res <- CCA::cc(rbind(Left.matrix, Right.matrix),
@@ -149,7 +157,7 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   y.loading <- cca.res$xcoef[((2*p+1):(2*p+q)), 1]
   x.proj <- .x.b %*% x.loading
   # y.proj <- delta.y %*% y.loading
-  y.proj <- (treat.code * delta.y) %*% y.loading
+  y.proj <- T.delta.y %*% y.loading
 
 
   # Generate a vector consists of split value candidates
