@@ -122,9 +122,9 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
       cbind(.x.b,matrix(0,nrow=n,ncol=p+q)),
       # cbind(x.b.1,matrix(0,nrow=n.treat.1,ncol=p+q)),
       # cbind(x.b.2,matrix(0,nrow=n-n.treat.1,ncol=p+q)),
-      cbind(.x.b,matrix(0,nrow=n,ncol=p+q))#,
+      cbind(.x.b,matrix(0,nrow=n,ncol=p+q)),
       #cbind(matrix(0,nrow=n,ncol=p),treat.code*delta.x, matrix(0,nrow=n,ncol=q))
-      #cbind(matrix(0,nrow=n,ncol=p),T.delta.x, matrix(0,nrow=n,ncol=q))
+      cbind(matrix(0,nrow=n,ncol=p),T.delta.x, matrix(0,nrow=n,ncol=q))
     )
 
   Right.matrix <-
@@ -134,9 +134,9 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
       cbind(matrix(0,nrow=n,ncol=2*p),T.delta.y),
       # cbind(matrix(0,nrow=n.treat.1,ncol=p),x.e.1,matrix(0,nrow=n.treat.1,ncol=q)),
       # cbind(matrix(0,nrow=n-n.treat.1,ncol=p),-1*x.e.2,matrix(0,nrow=n-n.treat.1,ncol=q)),
-      cbind(matrix(0,nrow=n,ncol=p),T.delta.x,matrix(0,nrow=n,ncol=q))#,
+      cbind(matrix(0,nrow=n,ncol=p),T.delta.x,matrix(0,nrow=n,ncol=q)),
       # cbind(matrix(0,nrow=n,ncol=2*p),treat.code*delta.y)
-      # cbind(matrix(0,nrow=n,ncol=2*p),T.delta.y)
+      cbind(matrix(0,nrow=n,ncol=2*p),T.delta.y)
     )
 
   # cca.res <- CCA::cc(rbind(Left.matrix, Right.matrix),
