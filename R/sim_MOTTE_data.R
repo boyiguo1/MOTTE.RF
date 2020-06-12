@@ -60,8 +60,8 @@ sim_MOTTE_data <- function(
 ){
 
   # TODO: extract this as argument for the parameter
-  c.x <- sum((1:3)^2)/6
-  c.y <- sum((1:3)^2)/6
+  c.x <- sum((1:3)^2)/12
+  c.y <- sum((1:3)^2)/12
 
   # c.x <- 0.01
   # c.y <- 0.01
@@ -76,7 +76,7 @@ sim_MOTTE_data <- function(
   .trt.f <- switch(trt.f,
                    "Linear" = function(x, trt){sweep(cbind(1,x), 1, trt, "*")%*%B},
                    # "Polynomial" = function(x, trt){(sweep(cbind(1,x^2), 1, trt, "*"))%*%B},
-                    "Polynomial" = function(x, trt){(sweep((cbind(1,x)%*%B) + (cbind(3,x)%*%B)^2, 1, trt, "*"))},
+                    "Polynomial" = function(x, trt){(sweep((cbind(1,x)%*%B) + (cbind(2,x)%*%B)^2, 1, trt, "*"))},
                    "Box" = function(x, trt){
                      .x <- x
                      for (i in 1: nrow(.x)) {
