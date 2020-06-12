@@ -1,17 +1,3 @@
-# source("global.R")
-
-# library(CCA)              # R Library supporting CCA
-# library(data.tree)        # R Library supporting the tree results
-
-# Try everything method
-# CCA diff.x and diff.y. One variable as split rule
-# Currently using correlation to detect the association between x and projection of x
-# left.out is ensure at least left.out*2 sample for either treated or untreated sample in the group
-# left.out is used for how many treated or untreated are left out when selecting split value
-# e.g. if left.out= 1 choosing max(min(treated x),min( untreated x))
-# impurity has two option: "MeanTreatmentEffect", "varReduce"
-
-
 #' Fitting MOTTE Tree in the MOTTE.RF
 #'
 #' @param x.b Pre-treatment covariates, i.e. microbiomes
@@ -19,7 +5,6 @@
 #' @param treat A vector of binary value, the arm of treatment
 #' @param y.b Pre-treatment response, i.e. biomarkers
 #' @param y.e Post-treatment response, i.e. biomarkers
-# TODO: change the language, it is awkward.
 #' @param nodesize An integer value. The threshold that control the maximum size of a node
 #' @param nsplits A numeric value, the number of maximum splits
 #' @param left.out left.out is ensure at least left.out*2 sample for either treated or untreated sample in the group
@@ -32,9 +17,6 @@
 #' @importFrom stats quantile var
 #' @import data.tree
 #'
-# TODO: add import function here
-# TODO: add description to setting reference trt.lvl. as R convention, the first level from levels function are use as the refence group
-#       i.e. treatment 0/ treatment control
 #' @examples
 #' set.seed(1)
 #' B <- create.B(10)
@@ -121,8 +103,6 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   x.b.2 <- .x.b[treat!=trt.lvl[1],,drop=F]
   x.e.1 <- delta.x[treat==trt.lvl[1],,drop=F] %>% scale(scale=F)
   x.e.2 <- delta.x[treat!=trt.lvl[1],,drop=F] %>% scale(scale=F)
-  # y.b.1 <-
-  # y.b.2 <-
   y.e.1 <- delta.y[treat==trt.lvl[1],,drop=F] %>% scale(scale=F)
   y.e.2 <- delta.y[treat!=trt.lvl[1],,drop=F] %>% scale(scale=F)
 
@@ -131,42 +111,6 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
     treat==trt.lvl[2] ~ -1
   )
 
-#
-#
-#   diff.x <- x.e - x.b
-#   diff.y <- y.e - y.b
-
-  # Create the augmented matrices for both treatment arm
-  # Each of the matrix have p(X^b) + p(\Delta X) + q (\Delta Y) columns
-  # Trtment lvl 1
-
-  # trt.1.left.matrix <-
-  #   rbind(
-  #     cbind(x.b[treat==trt.lvl[1],,drop=FALSE],matrix(0, nrow=n.treat.1, ncol=p+q)),
-  #     cbind(matrix(0,nrow=n.treat.1,ncol=2*p),diff.y[treat==trt.lvl[1],,drop=FALSE]),
-  #     cbind(x.b[treat==trt.lvl[1],,drop=FALSE],matrix(0, nrow=n.treat.1, ncol=p+q))
-  #   )
-  # trt.1.right.matrix <-
-  #   rbind(
-  #     cbind(matrix(0,nrow=n.treat.1,ncol=p),diff.x[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=q)),
-  #     cbind(matrix(0,nrow=n.treat.1,ncol=p),diff.x[treat==trt.lvl[1],,drop=FALSE],matrix(0,nrow=n.treat.1,ncol=q)),
-  #     cbind(matrix(0,nrow=n.treat.1,ncol=2*p),diff.y[treat==trt.lvl[1],,drop=FALSE])
-  #   )
-  #
-  # # Trtment lvl 2
-  #
-  # trt.2.left.matrix <-
-  #   rbind(
-  #     cbind(x.b[treat==trt.lvl[2],,drop=FALSE],matrix(0, nrow=n-n.treat.1, ncol=p+q)),
-  #     cbind(matrix(0,nrow=n-n.treat.1,ncol=2*p),diff.y[treat==trt.lvl[2],,drop=FALSE]),
-  #     cbind(x.b[treat==trt.lvl[2],,drop=FALSE],matrix(0, nrow=n-n.treat.1, ncol=p+q))
-  #   )
-  # trt.2.right.matrix <-
-  #   rbind(
-  #     cbind(matrix(0,nrow=n-n.treat.1,ncol=p),diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=q)),
-  #     cbind(matrix(0,nrow=n-n.treat.1,ncol=p),diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=q)),
-  #     cbind(matrix(0,nrow=n-n.treat.1,ncol=2*p),diff.y[treat==trt.lvl[2],,drop=FALSE])
-  #   )
 
 
   Left.matrix <-
@@ -176,7 +120,6 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
       cbind(x.b.1,matrix(0,nrow=n.treat.1,ncol=p+q)),
       cbind(x.b.2,matrix(0,nrow=n-n.treat.1,ncol=p+q)),
       cbind(matrix(0,nrow=n,ncol=p),treat.code*delta.x, matrix(0,nrow=n,ncol=q))
-      # cbind(matrix(0,nrow=n-n.treat.1,ncol=p),diff.x[treat==trt.lvl[2],,drop=FALSE],matrix(0,nrow=n-n.treat.1,ncol=q))
     )
 
   Right.matrix <-
@@ -187,26 +130,6 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
       cbind(matrix(0,nrow=n-n.treat.1,ncol=p),-1*x.e.2,matrix(0,nrow=n-n.treat.1,ncol=q)),
        cbind(matrix(0,nrow=n,ncol=2*p),treat.code*delta.y)
     )
-
-
-  # # Conduct CCA
-  # trt.1.cancor.res <- CCA::cc(rbind(trt.1.left.matrix, trt.1.right.matrix),
-  #                             rbind(trt.1.right.matrix, trt.1.left.matrix))
-  # trt.2.cancor.res <- CCA::cc(rbind(trt.2.left.matrix, trt.2.right.matrix),
-  #                             rbind(trt.2.right.matrix, trt.2.left.matrix))
-  #
-  #
-  # # TODO: write a function that extract ccs.
-  # trt.1.x.loading <- trt.1.cancor.res$xcoef[1:p,1]
-  # # diff.y.0.loading <- cancor.res$xcoef[(3*p+1):(3*p+q),1]
-  # trt.1.y.loading <- trt.1.cancor.res$xcoef[(2*p+1):(ncol(trt.1.left.matrix)),1]
-  # # TODO: check if xcoef give the same as ycoef
-  #
-  # trt.2.x.loading <- trt.2.cancor.res$xcoef[1:p,1]
-  # # diff.y.0.loading <- cancor.res$xcoef[(3*p+1):(3*p+q),1]
-  # trt.2.y.loading <- trt.2.cancor.res$xcoef[(2*p+1):(ncol(trt.2.left.matrix)),1]
-  # # TODO: check if xcoef give the same as ycoef
-
 
   # cca.res <- CCA::cc(rbind(Left.matrix, Right.matrix),
   #                    rbind(Right.matrix, Left.matrix))
@@ -222,12 +145,6 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
 
 
   # Calculate the canonical variates
-
-
-  # x.proj <- scale(x.b,center=x.center, scale=F)%*%x.loading
-  # y0.proj <- scale(diff.y, center = diff.y.0.center, scale=F)%*%diff.y.0.loading
-  # y1.proj <- scale(diff.y, center = diff.y.1.center, scale= F) %*% diff.y.1.loading
-
   x.loading <- cca.res$xcoef[1:p,1]
   y.loading <- cca.res$xcoef[((2*p+1):(2*p+q)), 1]
   x.proj <- .x.b %*% x.loading
@@ -281,10 +198,11 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
 
     # # revision to split based on treatment difference reflected on X^b
     # total.var <- var(y.proj[treat.bool]) + var(y.proj[!treat.bool])
-    total.var <- (n-1)/n*var(y.proj)
     # left.var <- var(y.proj[L.node.indices & treat.bool]) + var(y.proj[L.node.indices & (!treat.bool)])
-     left.var <- (L.length-1)/n*var(y.proj[L.node.indices])
     # right.var <- var(y.proj[R.node.indices & treat.bool]) + var(y.proj[R.node.indices & (!treat.bool)])
+
+     total.var <- (n-1)/n*var(y.proj)
+     left.var <- (L.length-1)/n*var(y.proj[L.node.indices])
      right.var <- (R.length-1)/n*var(y.proj[R.node.indices])
 
     return(
@@ -347,7 +265,6 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   child.l$name <- paste("Smaller Child: ",child.l$name)
 
   # Insert Children in the tree
-  # TODO::add data.tree:: to somewhere
   node$AddChildNode(child.ge)
   node$AddChildNode(child.l)
   return(node)
