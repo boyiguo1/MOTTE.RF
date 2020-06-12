@@ -76,7 +76,7 @@ sim_MOTTE_data <- function(
   .trt.f <- switch(trt.f,
                    "Linear" = function(x, trt){sweep(cbind(1,x), 1, trt, "*")%*%B},
                    # "Polynomial" = function(x, trt){(sweep(cbind(1,x^2), 1, trt, "*"))%*%B},
-                    "Polynomial" = function(x, trt){(sweep((cbind(3,x)%*%B) + (cbind(3,x)%*%B)^2, 1, trt, "*"))},
+                    "Polynomial" = function(x, trt){(sweep((cbind(1,x)%*%B) + (cbind(3,x)%*%B)^2, 1, trt, "*"))},
                    "Box" = function(x, trt){
                      .x <- x
                      for (i in 1: nrow(.x)) {
