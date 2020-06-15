@@ -62,6 +62,7 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
     return(
       data.tree::Node$new(
         paste("Terminal Node: ", n ," members", "Unique"),
+        sample_size = n,
         xcenter = NULL, split.comb=NULL, split.value=NULL,
         Outcome.1=(y.e-y.b)[treat==trt.lvl[1],,drop=F],
         Outcome.2=(y.e-y.b)[treat==trt.lvl[2],,drop=F])
@@ -72,10 +73,12 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   # The number of observations is smaller than threshold
   if(n <= nodesize){
     return(
-      data.tree::Node$new(paste("Terminal Node: ", n," members"),
-                          xcenter = NULL, split.comb=NULL, split.value=NULL,
-                          Outcome.1=(y.e-y.b)[treat==trt.lvl[1],,drop=F],
-                          Outcome.2=(y.e-y.b)[treat==trt.lvl[2],,drop=F])
+      data.tree::Node$new(
+        paste("Terminal Node: ", n," members"),
+        sample_size = n,
+        xcenter = NULL, split.comb=NULL, split.value=NULL,
+        Outcome.1=(y.e-y.b)[treat==trt.lvl[1],,drop=F],
+        Outcome.2=(y.e-y.b)[treat==trt.lvl[2],,drop=F])
     )}
 
   ### Base cases:
@@ -85,10 +88,12 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
 
   if(min(n-n.treat.1,n.treat.1) <= max(p,q)){
     return(
-      data.tree::Node$new(paste("Terminal Node: ", n ," members"),
-                          xcenter = NULL, split.comb=NULL, split.value=NULL,
-                          Outcome.1=(y.e-y.b)[treat==trt.lvl[1],,drop=F],
-                          Outcome.2=(y.e-y.b)[treat==trt.lvl[2],,drop=F])
+      data.tree::Node$new(
+        paste("Terminal Node: ", n ," members"),
+        sample_size = n,
+        xcenter = NULL, split.comb=NULL, split.value=NULL,
+        Outcome.1=(y.e-y.b)[treat==trt.lvl[1],,drop=F],
+        Outcome.2=(y.e-y.b)[treat==trt.lvl[2],,drop=F])
     )}
 
   ### Recursive cases:
@@ -144,7 +149,7 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
 
 
   cca.res <- cancor(rbind(Left.matrix, Right.matrix),
-                     rbind(Right.matrix, Left.matrix),
+                    rbind(Right.matrix, Left.matrix),
                     xcenter=F, ycenter=F)
 
   # cca.res <- stable.CCA(rbind(Left.matrix, Right.matrix),
@@ -176,10 +181,12 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
 
   if(length(split.value.cand)==0) {
     return(
-      data.tree::Node$new(paste("Terminal Node: ", n," members. No split"),
-                          xcenter = NULL, split.comb=NULL, split.value=NULL,
-                          Outcome.1=(y.e-y.b)[treat==trt.lvl[1],,drop=F],
-                          Outcome.2=(y.e-y.b)[treat==trt.lvl[2],,drop=F])
+      data.tree::Node$new(
+        paste("Terminal Node: ", n," members. No split"),
+        sample_size = n,
+        xcenter = NULL, split.comb=NULL, split.value=NULL,
+        Outcome.1=(y.e-y.b)[treat==trt.lvl[1],,drop=F],
+        Outcome.2=(y.e-y.b)[treat==trt.lvl[2],,drop=F])
     )
   }
 
@@ -209,9 +216,9 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
     # left.var <- var(y.proj[L.node.indices & treat.bool]) + var(y.proj[L.node.indices & (!treat.bool)])
     # right.var <- var(y.proj[R.node.indices & treat.bool]) + var(y.proj[R.node.indices & (!treat.bool)])
 
-     total.var <- (n-1)/n*var(y.proj)
-     left.var <- (L.length-1)/n*var(y.proj[L.node.indices])
-     right.var <- (R.length-1)/n*var(y.proj[R.node.indices])
+    total.var <- (n-1)/n*var(y.proj)
+    left.var <- (L.length-1)/n*var(y.proj[L.node.indices])
+    right.var <- (R.length-1)/n*var(y.proj[R.node.indices])
 
     return(
       matrix(
@@ -225,16 +232,19 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
 
   if(all(is.na(impurity.score[2,])))
     return(
-      data.tree::Node$new(paste("Terminal Node: ", n," members. No split"),
-                          xcenter = NULL, split.comb=NULL, split.value=NULL,
-                          Outcome.1=(y.e-y.b)[treat==trt.lvl[1],,drop=F],
-                          Outcome.2=(y.e-y.b)[treat==trt.lvl[2],,drop=F])
+      data.tree::Node$new(
+        paste("Terminal Node: ", n," members. No split"),
+        sample_size = n,
+        xcenter = NULL, split.comb=NULL, split.value=NULL,
+        Outcome.1=(y.e-y.b)[treat==trt.lvl[1],,drop=F],
+        Outcome.2=(y.e-y.b)[treat==trt.lvl[2],,drop=F])
     )
 
 
   # Create a new node
   node <-data.tree::Node$new(
-    paste("split.value = ", round(split.value, digits=3)),                        # Node name: must be unique to siblings
+    paste("split.value = ", round(split.value, digits=3)),
+    sample_size = n,# Node name: must be unique to siblings
     xcenter = attr(.x.b, "scaled:center"), #x.center,
     split.comb=x.loading, split.value=split.value,
     # Outcome=NULL, Treatment=NULL
