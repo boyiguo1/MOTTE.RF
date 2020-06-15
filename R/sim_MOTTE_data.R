@@ -60,8 +60,8 @@ sim_MOTTE_data <- function(
 ){
 
   # TODO: extract this as argument for the parameter
-  c.x <- sum((1:3)^2)/12
-  c.y <- sum((1:3)^2)/12
+  c.x <- sum((1:3)^2)/24
+  c.y <- sum((1:3)^2)/24
 
   # c.x <- 0.01
   # c.y <- 0.01
