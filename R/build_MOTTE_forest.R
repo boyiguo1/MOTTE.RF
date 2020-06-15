@@ -103,16 +103,32 @@ build_MOTTE_forest <- function(
   if(length(levels(treat)) != 2)
     stop("Error Message: Incorrect number of treatment groups. Must be 2 groups")
 
+  n <- nrow(x.b)
+
+  in_bag_idx <- purrr::map_dfc(1:ntree, function(x) {
+    trt_tmp <- data.frame(treat) %>% mutate(id=1:n())
+
+    idx <- purrr::map(levels(treat), function(lvl){
+      n_lvl <- sum(trt_tmp$treat==lvl)
+      trt_tmp %>%
+        filter(treat==lvl) %>%
+        pull(id) %>%
+        sample(size = ceiling(n_lvl*0.8), replace=F)
+    }) %>% unlist
+
+    ret <- rep(FALSE, n)
+    ret[idx] <- TRUE
+
+    return(data.frame(ret) %>%
+             rename(!!(paste0("tree",x)) := ret))
+  })
+
+
   if(nCore==1)
   {
     forest <- lapply(1:ntree,FUN = function(x){
-      trt_tmp <- data.frame(treat) %>% mutate(id=1:n())
 
-      idx <- purrr::map(levels(treat), function(lvl){
-        n <- sum(trt_tmp$treat==lvl)
-        trt_tmp %>% filter(treat==lvl) %>% pull(id) %>% sample(size = ceiling(n*0.8), replace=F)
-      }) %>% unlist
-
+      idx <- in_bag_idx[,x]
 
       return(build_MOTTE_tree(
         x.b=x.b[idx,], x.e=x.e[idx,], treat=treat[idx], y.b=y.b[idx,], y.e=y.e[idx,],
@@ -135,14 +151,8 @@ build_MOTTE_forest <- function(
                       .packages = c("CCA","data.tree", "purrr", "dplyr"))  %dopar%
                       {
 
-                        trt_tmp <- data.frame(treat) %>% mutate(id=1:n())
-
-                        idx <- purrr::map(levels(treat), function(lvl){
-                          n_lvl <- sum(trt_tmp$treat==lvl)
-                          trt_tmp %>% filter(treat==lvl) %>% pull(id) %>% sample(size = ceiling(n_lvl*0.8), replace=F)
-                        }) %>% unlist
-
-                        if(any(idx>length(treat))) stop("idx out of sample space")
+                        idx <- in_bag_idx[,i]
+                        if(length(idx) != length(treat)) stop("idx out of sample space")
 
                         tree <- build_MOTTE_tree(
                           x.b=x.b[idx,], x.e=x.e[idx,], treat=treat[idx], y.b=y.b[idx,], y.e=y.e[idx,],
@@ -152,7 +162,31 @@ build_MOTTE_forest <- function(
                         return(tree)
                       }
     stopCluster(cl)
-    if(ntree==1) return(list(forest))
   }
+  # if(ntree==1) return(list(forest))
+  attr(forest, "in_bag") <- in_bag_idx
   return(forest)
+}
+
+#' Title
+#'
+#' @param forest
+#' @param x.b
+#'
+#' @return
+#' @export
+#'
+#' @examples
+predict_MOTTE_oob <- function(forest, x.b){
+  ntree <- length(forest)
+  in_bag_idx <- attr(forest, "in_bag")
+  if(max(rowSums(in_bag_idx)) == ntree)
+     warning("Some sample are used in all trees, and hence no OOB prediction")
+  if(nrow(in_bag_idx)!=nrow(x.b))
+    stop("Make sure you use the x.b that was used to fit the random forest")
+
+  purrr::map_dfr(1:nrow(x.b), function(i){
+    calcTrtDiff.single(forest = forest[!in_bag_idx[i,]], x.b = x.b[i,])
+  })
+
 }
