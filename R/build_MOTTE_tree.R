@@ -156,6 +156,16 @@ build_MOTTE_tree <- function(x.b, x.e, treat, y.b, y.e,
   #                    rbind(Right.matrix, Left.matrix),
   #                   xcenter=F, ycenter=F)
 
+  if(any(dim(cca.res$xcoef) < rep(2*p+q,2))) {
+    return(
+      data.tree::Node$new(
+        paste("Terminal Node: ", n," members. No split"),
+        sample_size = n,
+        xcenter = NULL, split.comb=NULL, split.value=NULL,
+        Outcome.1=(y.e-y.b)[treat==trt.lvl[1],,drop=F],
+        Outcome.2=(y.e-y.b)[treat==trt.lvl[2],,drop=F])
+    )
+  }
 
   # Calculate the canonical variates
   x.loading <- cca.res$xcoef[1:p,1]
