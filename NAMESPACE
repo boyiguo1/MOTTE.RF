@@ -2,8 +2,10 @@
 
 export(build_MOTTE_forest)
 export(build_MOTTE_forest_CO)
+export(build_MOTTE_forest_MOD)
 export(build_MOTTE_tree)
 export(build_MOTTE_tree_CO)
+export(build_MOTTE_tree_MOD)
 export(calcTrtDiff)
 export(calcTrtDiff_CO)
 export(create.B)

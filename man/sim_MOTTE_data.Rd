@@ -47,8 +47,8 @@ Simulate MOTTE formated data
 \examples{
 set.seed(1)
 
-n.train = 200
-n.test = 100
+n.train = 400
+n.test = 1000
 p = 10
 q = 3
 ratio = 0.5
