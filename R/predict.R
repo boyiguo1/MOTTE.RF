@@ -159,11 +159,30 @@ predict_single <- function(forest, x.b){
 #' @return A list of list containing OUTCOME and TREATMENT for each tree
 #' @export
 #'
+#' @import parallel
+#' @importFrom doParallel registerDoParallel
+#' @importFrom foreach foreach %dopar%
+#'
 #' @examples
 traverseForest <- function(forest, x.b) {
   # Check root is a list of trees
   # Check x.b is one observation
-  return(purrr::map_dfr(forest,traverseTree,x.b=x.b))
+  cl <- makeCluster(detectCores()-1)
+  registerDoParallel(cl)
+
+  res <-foreach(i = 1:length(forest),
+                .combine = rbind,
+                .export=c("traverseTree"),
+                .multicombine = TRUE,
+                .verbose=F#,
+                #.packages = c("CCA","data.tree", "purrr", "dplyr")
+                )  %dopar%
+    {
+      traverseTree(root = forest[[i]], x.b=x.b)
+    }
+  stopCluster(cl)
+
+  return(res)
 }
 
 #' Title
